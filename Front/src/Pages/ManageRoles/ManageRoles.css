@@ -1,0 +1,83 @@
+.manage-roles-page {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100vh;
+    padding: 20px;
+    flex-direction: column;
+}
+
+.menu-admin-container {
+    width: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+}
+
+.search-container {
+    display: flex;
+    justify-content: flex-start; /* Alignement sur la gauche pour éviter un espacement trop large */
+    align-items: center;
+    padding: 10px;
+    height: 100px;
+}
+
+.search {
+    width: 300px; /* Largeur du champ de recherche */
+    margin-right: 20px; /* Ajout d'une marge pour l'espace entre le champ et le bouton */
+}
+.add-role-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 35px;
+}
+
+
+.user-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 20px;
+    flex-grow: 1;
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    width: 550px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.user-item .edit-button,
+.user-item .delete-button {
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.user-item .delete-button {
+    color: red;
+}
+
+.user-item .edit-button {
+    color: black;
+}
+

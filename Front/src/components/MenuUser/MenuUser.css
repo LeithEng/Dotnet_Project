@@ -1,73 +1,79 @@
 .menu-container {
-    width: 250px;
-    background-color: var(--color-muted) ;/* Couleur de fond du menu */
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    height: 100vh; 
-  }
-  
-  .profile-section {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;  /* S'assurer que le conteneur occupe toute la largeur */
-    margin-bottom: 20px;
-  }
-  
-  .profile-pic {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-    background-color: var(--color-light);
-  }
-  .username {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--color-light);
-  }
-  
-  .menu-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-  }
-  
-  .menu-list li {
-    padding: 10px 0;
-    font-size: 18px;
-    cursor: pointer;
-    color: var(--color-light);
-    width: 100%;
-    text-align: center;
-  }
-  
-  .menu-list li:hover {
-    font-weight: bold;
-  }
-  
-  
-  .logout-container {
-    margin-top: 350px;
-    padding: 10px;
-    display: flex;
-    justify-content: center;  /* Centrer le bouton Log Out */
-  }
-  
-  .logout-link{
-    color: var(--color-light);
-    font-size: 18px;
-    text-decoration: none; 
-    
+  width: 250px;
+  background-color: var(--color-muted); /* Couleur de fond du menu */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100vh;
+  position: fixed; /* Positionnement fixe */
+  top: 0;
+  left: 0; /* Positionner à gauche */
+  z-index: 1000; /* Assurer que le menu reste au-dessus des autres éléments */
+}
 
-  }
+.profile-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  background-color: var(--color-light);
+}
+
+.username {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--color-light);
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.menu-list li {
+  padding: 10px 0;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--color-light);
+  width: 100%;
+  text-align: center;
+}
+
+.menu-list li:hover {
+  font-weight: bold;
+}
+
+.logout-container {
+  margin-top: 350px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-icon {
+  font-size: 24px;
+  color: white !important;
+  cursor: pointer;
+}
+
+a.logout-link  {
+  font-size: 18px;
+  color: white !important;
+  text-decoration: none;
   
-  .logout-link :hover{
-    font-weight: bold;
-    
-    
-  }
+}
+

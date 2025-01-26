@@ -1,0 +1,117 @@
+/* Conteneur principal */
+.post-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px; /* Augmenté pour donner plus d'espace */
+    max-width: 700px; /* Largeur augmentée */
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px auto;
+  }
+  
+  /* En-tête */
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px; /* Augmenté pour donner plus d'espace */
+  }
+  
+  .profile-pic {
+    width: 80px; /* Augmenté */
+    height: 80px; /* Augmenté */
+    background-color: #ccc;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    margin-right: 15px; /* Augmenté */
+  }
+  
+  .username {
+    font-size: 20px; /* Taille de police augmentée */
+    font-weight: bold;
+  }
+  
+  /* Contenu */
+  .content {
+    margin-bottom: 20px; /* Augmenté pour espacer le contenu */
+    font-size: 18px; /* Taille du texte augmentée */
+    width: 600px;
+  }
+  
+  .hobby {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+    font-size: 16px; /* Taille du texte augmentée */
+  }
+  
+  .date {
+    color: #888;
+    font-size: 14px; /* Taille du texte augmentée */
+    margin-top: 5px;
+  }
+  
+  /* Réactions */
+  .reactions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px; /* Augmenté pour plus d'espace */
+  }
+  
+  .likes {
+    display: flex;
+    align-items: center;
+  }
+  
+  .like-button {
+    background: none;
+    border: none;
+    font-size: 25px; /* Taille augmentée */
+    cursor: pointer;
+  }
+  
+  .like-count {
+    margin-left: 10px; /* Espacement augmenté */
+    font-size: 20px; /* Taille augmentée */
+    font-weight: bold;
+  }
+  
+  .emojis button {
+    background: none;
+    border: none;
+    font-size: 25px; /* Taille augmentée */
+    cursor: pointer;
+    margin-right: 10px; /* Espacement augmenté */
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .emojis button:hover {
+    transform: scale(1.5);
+  }
+  
+  /* Bouton d'ajout de commentaire */
+  .comment-button {
+    background-color:  var(--color-muted);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px; /* Augmenté pour un bouton plus grand */
+    font-size: 16px; /* Taille de police augmentée */
+    cursor: pointer;
+    width: 30%;
+  }
+  
+
+  /* Centrer le post */
+  .App {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    margin: 0;
+  }
+  
