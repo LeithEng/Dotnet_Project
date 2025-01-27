@@ -93,9 +93,10 @@
   }
 
   .checkbox-field input[type="checkbox"] {
-    appearance: none;
+    
     -webkit-appearance: none;
     -moz-appearance: none;
+    appearance: none;
     width: 30px;
     height: 30px;
     border: 3px solid black;

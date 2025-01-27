@@ -7,11 +7,13 @@ import RegisterForm from './components/RegisterForm/RegisterForm';
 import LoginForm from './components/LoginForm/LoginForm';
 import Post from './components/post/post';
 import CreatePost from './Pages/CreatePost/CreatePost';
+import HomePage from './Pages/HomePage/HomePage';
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<CreatePost />} />
+        <Route path="/home" element={<HomePage/>} />
+        <Route path="/Post" element={<CreatePost/>} />
       </Routes>
     </Router>
   );

@@ -1,0 +1,110 @@
+/* General styles */
+body {
+    font-family: var(--font-family-primary);
+    background-color: #f8f8f8;
+    height: 100%;
+  }
+  
+  .container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  
+  /* Left panel styles */
+  .left-panel {
+    flex: 2;
+    padding: 3rem;
+    display: flex;
+    background-color: #ffffff;
+  }
+
+  header {
+    position: absolute; 
+    top: 20px;          
+    left: 20px;         
+    font-weight: bold; 
+    
+  }
+  
+  
+  header h1 {
+    color: var(--color-darkest);
+    margin-bottom: 2rem;
+    
+  }
+
+  main {
+    margin-right: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    height: 100%;
+}
+  
+  main h2 {
+    color: var(--color-darkest);
+    margin-bottom: 4rem;
+  }
+  
+  main p {
+    color:var(--color-darkest);
+    margin-bottom: 5rem;
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: var(--font-family-primary);
+    width: 200px;
+    
+  }
+  
+  button.join-now {
+    background-color: var(--color-muted);
+    color: white;
+  }
+  
+  button.join-now:hover {
+    background-color: #879ef0;
+  }
+  
+  button.login {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  button.login:hover {
+    background-color: #3e4cc4;
+  }
+  
+  /* Right panel styles */
+  .right-panel {
+    flex: 1;
+    padding: 5rem;
+    background-color: var(--color-darkest);
+  }
+  
+
+
+  .home-pic {
+    position: absolute;
+    left: 62%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    max-width: 600px;
+    height: auto;
+}
