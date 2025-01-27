@@ -23,7 +23,7 @@ function RegisterForm() {
 
   return (
     <div className="form-container">
-      <div className="left-panel">
+      <div className="panel1">
         <h1 class="name">Website name</h1>
         <h2 class="join-text">Join us now!</h2>
         <p>
@@ -33,7 +33,7 @@ function RegisterForm() {
         </p>
       </div>
 
-      <div className="right-panel">
+      <div className="panel2">
         <form onSubmit={handleSubmit}>
           <div className="form-group-row">
             <div className="form-group">

@@ -23,7 +23,7 @@
     max-width: 100%;
   }
   
-  .left-panel {
+  .panel1 {
     font-family: 'Poppins', sans-serif;
     background-color: var(--color-darkest);
     color: #fff;
@@ -35,25 +35,25 @@
     align-items: center;
   }
   
-  .left-panel h1 {
+  .panel1 h1 {
     margin: 0 0 1rem;
     font-size: 2rem;
   }
   
-  .left-panel h2 {
+  .panel1 h2 {
     margin: 0 0 1rem;
     font-size: 1.5rem;
     text-align: center;
   }
   
-  .left-panel p {
+  .panel1 p {
     font-size: 1.5rem;
     line-height: 1.4;
     text-align: center;
   }
 
 
-  .right-panel {
+  .panel2 {
     background-color: #fff;
     padding: 2rem;
     width: 60%;
