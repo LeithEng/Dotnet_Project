@@ -1,19 +1,17 @@
 ﻿using api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using api.Models;
+//using 
 
 namespace api.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-       
-        public DbSet<User> Users { get; set; }
+
+        //public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Reaction> Reactions { get; set; }
@@ -21,8 +19,8 @@ namespace api.Data
         public DbSet<UserEvent> UserEvents { get; set; }
         public DbSet<Hobby> Hobbies { get; set; }
         public DbSet<FavoriteHobby> FavoriteHobbies { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
+        //public DbSet<Role> Roles { get; set; }
+        //public DbSet<Permission> Permissions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,16 +38,25 @@ namespace api.Data
 
             // UserFavoriteHobby relation
             modelBuilder.Entity<FavoriteHobby>()
-                .HasOne(fh => fh.User)
-                .WithMany(u => u.FavoriteHobbies)
-                .HasForeignKey(fh => fh.UserId);
+            .HasKey(ue => new { ue.UserId, ue.HobbyId });
+
+            modelBuilder.Entity<FavoriteHobby>()
+            .HasOne(ue => ue.User)
+            .WithMany(u => u.FavoriteHobbies)
+            .HasForeignKey(ue => ue.UserId);
+
+
+            modelBuilder.Entity<FavoriteHobby>()
+            .HasOne(ue => ue.Hobby)
+            .WithMany(e => e.FavoriteHobbies)
+            .HasForeignKey(ue => ue.HobbyId);
 
             // HobbySubHobbies relation
-            modelBuilder.Entity<Hobby>()
+            /*modelBuilder.Entity<Hobby>()
                 .HasOne(h => h.ParentHobby)
                 .WithMany(h => h.SubHobbies)
                 .HasForeignKey(h => h.ParentHobbyId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);*/
 
             // PostComment relation
             modelBuilder.Entity<Comment>()

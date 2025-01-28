@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250128090318_IdentityTables")]
+    partial class IdentityTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,21 +245,6 @@ namespace api.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("api.Models.FavoriteHobby", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("HobbyId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "HobbyId");
-
-                    b.HasIndex("HobbyId");
-
-                    b.ToTable("FavoriteHobbies");
-                });
-
             modelBuilder.Entity("api.Models.Hobby", b =>
                 {
                     b.Property<string>("Id")
@@ -271,6 +259,11 @@ namespace api.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("IconPicture")
                         .IsRequired()
@@ -299,6 +292,10 @@ namespace api.Migrations
                         {
                             t.HasCheckConstraint("CK_Hobby_Level", "[Level] BETWEEN 1 AND 3");
                         });
+
+                    b.HasDiscriminator().HasValue("Hobby");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("api.Models.Post", b =>
@@ -471,6 +468,24 @@ namespace api.Migrations
                     b.ToTable("UserEvents");
                 });
 
+            modelBuilder.Entity("api.Models.FavoriteHobby", b =>
+                {
+                    b.HasBaseType("api.Models.Hobby");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable(t =>
+                        {
+                            t.HasCheckConstraint("CK_Hobby_Level", "[Level] BETWEEN 1 AND 3");
+                        });
+
+                    b.HasDiscriminator().HasValue("FavoriteHobby");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -556,30 +571,12 @@ namespace api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("api.Models.FavoriteHobby", b =>
-                {
-                    b.HasOne("api.Models.Hobby", "Hobby")
-                        .WithMany("FavoriteHobbies")
-                        .HasForeignKey("HobbyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("api.Models.User", "User")
-                        .WithMany("FavoriteHobbies")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hobby");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("api.Models.Hobby", b =>
                 {
                     b.HasOne("api.Models.Hobby", "ParentHobby")
-                        .WithMany()
-                        .HasForeignKey("ParentHobbyId");
+                        .WithMany("SubHobbies")
+                        .HasForeignKey("ParentHobbyId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ParentHobby");
                 });
@@ -633,6 +630,17 @@ namespace api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("api.Models.FavoriteHobby", b =>
+                {
+                    b.HasOne("api.Models.User", "User")
+                        .WithMany("FavoriteHobbies")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("api.Models.Event", b =>
                 {
                     b.Navigation("UserEvents");
@@ -640,7 +648,7 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Hobby", b =>
                 {
-                    b.Navigation("FavoriteHobbies");
+                    b.Navigation("SubHobbies");
                 });
 
             modelBuilder.Entity("api.Models.Post", b =>
