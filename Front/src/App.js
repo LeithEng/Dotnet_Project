@@ -12,6 +12,7 @@ import AddAdmin from './Pages/AddAdmin/AddAdmin';
 import ViewEvents from './Pages/ViewEvents/ViewEvents';
 import ViewProfileAdmin from './Pages/ViewProfileAdmin/ViewProfileAdmin';
 import EditProfile from './Pages/EditProfile/EditProfile';
+import ViewEventCard from './Pages/ViewEvent/ViewEvent';
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
         <Route path="/ViewEvents" element={<ViewEvents/>} />
         <Route path="/AdminProfile" element={<ViewProfileAdmin/>} />
         <Route path="/EditProfile" element={<EditProfile/>} />
+        <Route path="/ViewEvent" element={<ViewEventCard/>} />
       </Routes>
     </Router>
   );

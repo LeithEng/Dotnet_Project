@@ -1,0 +1,28 @@
+.event-page {
+    display: flex;
+    height: 100vh;
+    background-color: #f0f0f0;
+  }
+  
+  .event-content {
+    flex-grow: 1;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-left: 200px;
+  }
+   
+  
+  @media (max-width: 768px) {
+    .event-page {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .event-content {
+      padding: 10px;
+    }
+  }
+  
