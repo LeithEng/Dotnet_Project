@@ -90,20 +90,7 @@ const ViewProfile = () => {
                 <span className="value">{user.email}</span>
               )}
             </div>
-            <div className="col">
-              <div className="label">Birthdate:</div>
-              {isEditing ? (
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={user.birthDate}
-                  onChange={handleChange}
-                  className="value"
-                />
-              ) : (
-                <span className="value">{new Date(user.birthDate).toLocaleDateString()}</span>
-              )}
-            </div>
+           
           </div>
 
           {/* Bouton EditProfile */}

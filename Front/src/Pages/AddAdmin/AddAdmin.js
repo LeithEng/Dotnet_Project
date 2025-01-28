@@ -65,18 +65,7 @@ const AddAdmin = () => {
                 />
               </label>
             </div>
-            <div className="form-group">
-              <label>
-              Birth Date:
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-            </div>
+          
             <div className="form-group">
               <label>
                 Role:

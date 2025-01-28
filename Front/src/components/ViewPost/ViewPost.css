@@ -1,0 +1,120 @@
+/* Conteneur principal */
+.post-card {
+    border: 1px solid #ddd !important;
+    border-radius: 10px !important;
+    padding: 20px !important; /* Augmenté pour donner plus d'espace */
+    max-width: 1200px !important; /* Largeur augmentée */
+    background-color: #fff !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    margin: 10px auto !important;
+}
+
+/* En-tête */
+.header {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 15px !important; /* Augmenté pour donner plus d'espace */
+}
+
+.profile-pic {
+    width: 80px !important; /* Augmenté */
+    height: 80px !important; /* Augmenté */
+    background-color: #ccc !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-weight: bold !important;
+    margin-right: 15px !important; /* Augmenté */
+}
+
+.username {
+    font-size: 20px !important; /* Taille de police augmentée */
+    font-weight: bold !important;
+}
+
+/* Contenu */
+.content {
+    margin-bottom: 20px !important; /* Augmenté pour espacer le contenu */
+    font-size: 18px !important; /* Taille du texte augmentée */
+    width: 600px !important;
+}
+
+.hobby {
+    color: #666 !important;
+    font-style: italic !important;
+    margin-top: 5px !important;
+    font-size: 16px !important; /* Taille du texte augmentée */
+}
+
+.date {
+    color: #888 !important;
+    font-size: 14px !important; /* Taille du texte augmentée */
+    margin-top: 5px !important;
+}
+
+/* Réactions */
+.reactions {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 15px !important; /* Augmenté pour plus d'espace */
+}
+
+.likes {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.like-button {
+    background: none !important;
+    border: none !important;
+    font-size: 25px !important; /* Taille augmentée */
+    cursor: pointer !important;
+}
+
+.like-count {
+    margin-left: 10px !important; /* Espacement augmenté */
+    font-size: 20px !important; /* Taille augmentée */
+    font-weight: bold !important;
+}
+
+.Emojis {
+    display: flex !important;
+    gap: 0.2px !important; /* Espace entre les emojis */
+}
+
+.Emojis button {
+    background: none !important;
+    border: none !important;
+    font-size: 25px !important; /* Taille augmentée */
+    cursor: pointer !important;
+    transition: transform 0.2s ease-in-out !important;
+
+}
+
+.Emojis button:hover {
+    transform: scale(1.5) !important;
+}
+
+/* Bouton d'ajout de commentaire */
+.comment-button {
+    background-color: var(--color-muted) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 10px 20px !important; /* Augmenté pour un bouton plus grand */
+    font-size: 16px !important; /* Taille de police augmentée */
+    cursor: pointer !important;
+    width: 30% !important;
+}
+
+/* Centrer le post */
+.App {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100vh !important;
+    background-color: #f5f5f5 !important;
+    margin: 0 !important;
+}
