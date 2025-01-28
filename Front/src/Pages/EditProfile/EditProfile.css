@@ -1,0 +1,30 @@
+.profile-edit-page {
+    display: flex;
+    height: 100vh;
+    background-color: #f0f0f0;
+  }
+  
+  .profile-edit-content {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-left: 130px;
+  }
+  
+  
+  
+  @media (max-width: 768px) {
+    .profile-edit-page {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .profile-edit-content {
+      padding: 10px;
+      margin-left: 0;
+    }
+  }
+  

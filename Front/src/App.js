@@ -2,9 +2,6 @@
 import './App.css';
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MenuAdmin from './components/MenuAdmin/MenuAdmin';
-import RegisterForm from './components/RegisterForm/RegisterForm';
-import LoginForm from './components/LoginForm/LoginForm';
 import ViewPost from './components/ViewPost/ViewPost';
 import CreatePost from './Pages/CreatePost/CreatePost';
 import HomePage from './Pages/HomePage/HomePage';
@@ -14,6 +11,7 @@ import CreateEventPage from './Pages/CreateEvent/CreateEvent';
 import AddAdmin from './Pages/AddAdmin/AddAdmin';
 import ViewEvents from './Pages/ViewEvents/ViewEvents';
 import ViewProfileAdmin from './Pages/ViewProfileAdmin/ViewProfileAdmin';
+import EditProfile from './Pages/EditProfile/EditProfile';
 function App() {
   return (
     <Router>
@@ -27,6 +25,7 @@ function App() {
         <Route path="/AddAdmin" element={<AddAdmin/>} />
         <Route path="/ViewEvents" element={<ViewEvents/>} />
         <Route path="/AdminProfile" element={<ViewProfileAdmin/>} />
+        <Route path="/EditProfile" element={<EditProfile/>} />
       </Routes>
     </Router>
   );

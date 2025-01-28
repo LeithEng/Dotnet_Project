@@ -52,7 +52,7 @@
 }
 
 .logout-container {
-  margin-top: 350px;
+  margin-top: 300px;
   padding: 10px;
   display: flex;
   justify-content: center;  /* Centrer le bouton Log Out */
@@ -64,7 +64,7 @@
   color: var(--color-light);
   font-size: 18px;
   text-decoration: none; 
-  width: 250px;
+  width: 180px;
   background-color: var(--color-muted); /* Couleur de fond du menu */
   padding: 20px;
   display: flex;
