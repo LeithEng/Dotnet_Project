@@ -13,6 +13,7 @@ import Register from './Pages/Register/Register';
 import CreateEventPage from './Pages/CreateEvent/CreateEvent';
 import AddAdmin from './Pages/AddAdmin/AddAdmin';
 import ViewEvents from './Pages/ViewEvents/ViewEvents';
+import ViewProfileAdmin from './Pages/ViewProfileAdmin/ViewProfileAdmin';
 function App() {
   return (
     <Router>
@@ -25,6 +26,7 @@ function App() {
         <Route path="/ViewPost" element={<ViewPost/>} />
         <Route path="/AddAdmin" element={<AddAdmin/>} />
         <Route path="/ViewEvents" element={<ViewEvents/>} />
+        <Route path="/AdminProfile" element={<ViewProfileAdmin/>} />
       </Routes>
     </Router>
   );
