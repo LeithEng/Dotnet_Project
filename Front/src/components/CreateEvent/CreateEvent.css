@@ -1,0 +1,81 @@
+
+.modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 300px;
+    padding: 20px;
+    font-family: var(--font-family-primary);
+    
+  }
+  
+  .modal-card {
+    width: 800px;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .modal-description {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 16px;
+  }
+  
+  .modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-family: var(--font-family-primary);
+  }
+  
+  .textarea-field {
+    width: 100%;
+    padding: 10px;
+    height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-family: var(--font-family-primary);
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .cancel-button,
+  .create-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .cancel-button {
+    background: var(--color-secondary);
+    color: white;
+  }
+  
+  .create-button {
+    background: var(--color-secondary);
+    color: white;
+  }
+  

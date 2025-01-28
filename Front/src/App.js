@@ -1,23 +1,27 @@
 
 import './App.css';
-import MenuUser from './components/MenuUser/MenuUser';
-import Post from './components/Post/Post';
-import Search from './components/Search/Search';
-import ViewFriends from './Pages/ViewFriends/ViewFriends';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MenuAdmin from './components/MenuAdmin/MenuAdmin';
-import ManageAdmins from './Pages/ManageAdmins/ManageAdmins';
-import AddAdmin from './Pages/AddAdmin/AddAdmin';
-import ManageUsers from './Pages/ManageUsers/ManageUsers';
-import ManageRoles from './Pages/ManageRoles/ManageRoles';
-import ViewHobbies from './Pages/ViewHobbies/ViewHobbies';
-import ViewEvents from './Pages/ViewEvents/ViewEvents';
-import ViewProfile from './Pages/ViewProfile/ViewProfile';
-import ManageHobbies from './Pages/ManageHobbies/ManageHobbies';
+import RegisterForm from './components/RegisterForm/RegisterForm';
+import LoginForm from './components/LoginForm/LoginForm';
+import Post from './components/post/post';
+import CreatePost from './Pages/CreatePost/CreatePost';
+import HomePage from './Pages/HomePage/HomePage';
+import Login from './Pages/Login/Login';
+import Register from './Pages/Register/Register';
+import CreateEventPage from './Pages/CreateEvent/CreateEvent';
 function App() {
   return (
-    <div className="App">
-     <AddAdmin/> 
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/home" element={<HomePage/>} />
+        <Route path="/Post" element={<CreatePost/>} />
+        <Route path="/Login" element={<Login/>} />
+        <Route path="/Register" element={<Register/>} />
+        <Route path="/CreateEvent" element={<CreateEventPage/>} />
+      </Routes>
+    </Router>
   );
 }
 
