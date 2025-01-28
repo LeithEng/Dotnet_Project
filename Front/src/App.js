@@ -13,6 +13,7 @@ import ViewEvents from './Pages/ViewEvents/ViewEvents';
 import ViewProfileAdmin from './Pages/ViewProfileAdmin/ViewProfileAdmin';
 import EditProfile from './Pages/EditProfile/EditProfile';
 import ViewEventCard from './Pages/ViewEvent/ViewEvent';
+import ManageAdminPage from './Pages/ManageAdminPage/ManageAdminPage';
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/AdminProfile" element={<ViewProfileAdmin/>} />
         <Route path="/EditProfile" element={<EditProfile/>} />
         <Route path="/ViewEvent" element={<ViewEventCard/>} />
+        <Route path="/ManageAdmin" element={<ManageAdminPage/>} />
       </Routes>
     </Router>
   );

@@ -1,6 +1,7 @@
 
 import './MenuAdmin.css'
 import profilePic from '../../assets/images/ProfilePic.png';
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function MenuAdmin() {
   return (

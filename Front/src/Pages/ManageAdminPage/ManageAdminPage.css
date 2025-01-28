@@ -1,0 +1,20 @@
+.admin-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 40px 20px;
+    gap: 20px;
+    height: 100vh;
+    width: 80vw;
+    margin-left:200px;
+    box-sizing: border-box;
+  }
+  
+  .admin {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    
+  }
+  
