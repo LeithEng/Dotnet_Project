@@ -16,7 +16,7 @@ import ManageHobbies from './Pages/ManageHobbies/ManageHobbies';
 function App() {
   return (
     <div className="App">
-     <ManageHobbies/> 
+     <AddAdmin/> 
     </div>
   );
 }
