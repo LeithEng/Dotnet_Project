@@ -20,9 +20,7 @@ namespace api.Data
         public DbSet<UserEvent> UserEvents { get; set; }
         public DbSet<Hobby> Hobbies { get; set; }
         public DbSet<FavoriteHobby> FavoriteHobbies { get; set; }
-        //public DbSet<Role> Roles { get; set; }
-        //public DbSet<Permission> Permissions { get; set; }
-
+        public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

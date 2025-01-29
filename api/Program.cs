@@ -44,6 +44,28 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = async context =>
+        {
+            var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                using (var scope = context.HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var isBlacklisted = await dbContext.TokenBlacklist.AnyAsync(t => t.Token == token);
+
+                    if (isBlacklisted)
+                    {
+                        context.Fail("This token has been revoked.");
+                        return;
+                    }
+                }
+            }
+        }
+    };
 });
 builder.Services.AddSwaggerGen(c =>
 {

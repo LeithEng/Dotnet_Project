@@ -14,14 +14,16 @@ using System.Threading.Tasks;
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
+    private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
-    public AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+    public AuthenticationController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDbContext dbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _dbContext = dbContext;
     }
     [HttpPost("Register")]
     public async Task<IActionResult> Register(RegisterDto registerDto)
@@ -124,11 +126,25 @@ public class AuthenticationController : ControllerBase
     {
         try
         {
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return Unauthorized(new { message = "User not found." });
             }
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Invalid token." });
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var expiration = jwtToken.ValidTo;
+            var blacklistedToken = new TokenBlacklist { Token = token, Expiration = expiration };
+
+            await _dbContext.TokenBlacklist.AddAsync(blacklistedToken);
+            await _dbContext.SaveChangesAsync();
+
             await _signInManager.SignOutAsync();
 
             return Ok(new { message = "Logged out successfully" });
