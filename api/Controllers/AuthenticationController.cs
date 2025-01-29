@@ -63,14 +63,12 @@ public class AuthenticationController : ControllerBase
         {
             return Unauthorized(new { message = "Invalid Email" });
         }
-
         var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
         if (!result.Succeeded)
         {
             return Unauthorized(new { message = "Invalid Password." });
         }
-
-        var token = GenerateJwtToken(user);
+        var token = GenerateJwtToken(user, loginDto.RememberMe);
         return Ok(new
         {
             token,
@@ -78,7 +76,7 @@ public class AuthenticationController : ControllerBase
         });
     }
 
-    private string GenerateJwtToken(User user)
+    private string GenerateJwtToken(User user, bool rememberMe)
     {
         var claims = new[]
         {
@@ -90,12 +88,12 @@ public class AuthenticationController : ControllerBase
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        var tokenExpiration = rememberMe ? DateTime.Now.AddDays(10) : DateTime.Now.AddHours(1);
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddHours(1),
+            expires: tokenExpiration,
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -120,5 +118,24 @@ public class AuthenticationController : ControllerBase
             roles = roles
         });
     }
+    [Authorize]
+    [HttpPost("Logout")]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "User not found." });
+            }
+            await _signInManager.SignOutAsync();
 
+            return Ok(new { message = "Logged out successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while logging out.", error = ex.Message });
+        }
+    }
 }
