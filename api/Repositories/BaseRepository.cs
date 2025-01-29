@@ -20,6 +20,7 @@ namespace Repositories
             _context = context;
         }
 
+
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
@@ -41,7 +42,7 @@ namespace Repositories
             return await query.FirstOrDefaultAsync(criteria);
         }
 
-        
+     
         public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
