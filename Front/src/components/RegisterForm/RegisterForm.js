@@ -7,25 +7,65 @@ function RegisterForm() {
     lastName: "",
     email: "",
     password: "",
-    birthDate: "",
+    confirmPassword: "",
   });
+
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    alert("Registration successful!");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:5073/api/authentication/Register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (data.errors && data.errors.Password) {
+          const passwordErrors = data.errors.Password.join(", ");
+          setError(passwordErrors);
+        } else {
+          setError(data.message || "Failed to register.");
+        }
+  
+        return;
+      }
+
+      alert("Registration successful!");
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred: " + err.message);
+    }
   };
 
   return (
     <div className="form-container">
       <div className="panel1">
-        <h1 class="name">Website name</h1>
-        <h2 class="join-text">Join us now!</h2>
+        <h1 className="name">Website name</h1>
+        <h2 className="join-text">Join us now!</h2>
         <p>
           Join a community of like-minded hobbyists and showcase your favorite
           activities. Your next great hobby adventure starts here—create your
@@ -85,16 +125,18 @@ function RegisterForm() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="birthDate">Birth date</label>
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
-              type="date"
-              id="birthDate"
-              name="birthDate"
-              value={formData.birthDate}
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
           </div>
+
+          {error && <p className="error-message">{error}</p>}
 
           <button type="submit" className="submit-btn">
             Get started
