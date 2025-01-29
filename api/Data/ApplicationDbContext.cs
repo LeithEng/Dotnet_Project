@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using api.Models;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 //using 
 
 namespace api.Data
@@ -22,6 +24,8 @@ namespace api.Data
         public DbSet<FavoriteHobby> FavoriteHobbies { get; set; }
         public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
 
+    
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -37,18 +41,33 @@ namespace api.Data
 
             // FavoriteHobby relations
             modelBuilder.Entity<FavoriteHobby>()
-            .HasKey(ue => new { ue.UserId, ue.HobbyId });
+                .HasKey(ue => new { ue.UserId, ue.HobbyId });
 
             modelBuilder.Entity<FavoriteHobby>()
-            .HasOne(ue => ue.User)
-            .WithMany(u => u.FavoriteHobbies)
-            .HasForeignKey(ue => ue.UserId);
-
+                .HasOne(ue => ue.User)
+                .WithMany(u => u.FavoriteHobbies)
+                .HasForeignKey(ue => ue.UserId);
 
             modelBuilder.Entity<FavoriteHobby>()
-            .HasOne(ue => ue.Hobby)
-            .WithMany(e => e.FavoriteHobbies)
-            .HasForeignKey(ue => ue.HobbyId);
+                .HasOne(ue => ue.Hobby)
+                .WithMany(e => e.FavoriteHobbies)
+                .HasForeignKey(ue => ue.HobbyId);
+
+            // Event-Hobby relation (One-to-many)
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.Hobby)
+                .WithMany(h => h.Events)
+                .HasForeignKey(e => e.HobbyId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
+
+
+
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.CreatedEvents)  
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
 
             // PostComment relation
             modelBuilder.Entity<Comment>()
@@ -99,13 +118,86 @@ namespace api.Data
                     j => j.HasOne<User>().WithMany().HasForeignKey("FriendId").OnDelete(DeleteBehavior.Restrict),
                     j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Restrict)
                 );
+
             modelBuilder.Entity<IdentityRole>().HasData(
-            new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
-            new IdentityRole { Name = "User", NormalizedName = "USER" }
+                new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
+                new IdentityRole { Name = "User", NormalizedName = "USER" }
+            );
+
+
+            modelBuilder.Entity<Hobby>().HasData(
+                            new Hobby
+                            {
+                                Id = "1",
+                                IconPicture = "icon1.png",
+                                Description = "Photography hobby",
+                                Name = "Photography",
+                                Level = 1
+                            },
+                            new Hobby
+                            {
+                                Id = "2",
+                                IconPicture = "icon2.png",
+                                Description = "Music hobby",
+                                Name = "Music",
+                                Level = 2
+                            }
+                        );
+
+            // Seed Users
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = "user1",
+                    UserName = "user1@example.com",
+                    FirstName = "John",
+                    LastName = "Doe",
+                    IsPremium = true,
+                    CreatedAt = DateTime.Now
+                },
+                new User
+                {
+                    Id = "user2",
+                    UserName = "user2@example.com",
+                    FirstName = "Jane",
+                    LastName = "Smith",
+                    IsPremium = false,
+                    CreatedAt = DateTime.Now
+                }
+            );
+
+            // You can also seed related data for testing (e.g., FavoriteHobbies)
+            modelBuilder.Entity<FavoriteHobby>().HasData(
+                new FavoriteHobby { HobbyId = "1", UserId = "user1" },
+                new FavoriteHobby { HobbyId = "2", UserId = "user2" }
+            );
+
+            // Seed Events (optional)
+            modelBuilder.Entity<Event>().HasData(
+                new Event
+                {
+                    Id = "event1",
+                    Name = "Photography Workshop",
+                    Description = "A workshop for photography enthusiasts.",
+                    StartDate = DateTime.Now.AddDays(1),
+                    EndDate = DateTime.Now.AddDays(2),
+                    HobbyId = "1",
+                    UserId = "user1"
+                }
+            );
+
+            // Seed UserEvents (optional)
+            modelBuilder.Entity<UserEvent>().HasData(
+                new UserEvent { UserId = "user1", EventId = "event1", Rate = 5 }
             );
         }
 
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+        }
     }
 
 }

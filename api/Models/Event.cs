@@ -10,7 +10,13 @@ namespace api.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        // Relationships
+        public string HobbyId { get; set; }
+        public Hobby Hobby { get; set; }
+
+        // Foreign Key for User (creator of the event)
+        public string UserId { get; set; }
+        public User User { get; set; } // Navigation property to User (creator)
+
         public ICollection<UserEvent> UserEvents { get; set; }
     }
 }

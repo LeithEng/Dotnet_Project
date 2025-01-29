@@ -25,6 +25,9 @@ namespace api.Models
         public ICollection<UserEvent> UserEvents { get; set; }
         public ICollection<FavoriteHobby> FavoriteHobbies { get; set; }
         public ICollection<User> Friends { get; set; }
+
+        public ICollection<Event> CreatedEvents { get; set; } 
+
     }
 
 

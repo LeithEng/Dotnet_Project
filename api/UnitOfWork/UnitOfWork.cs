@@ -8,12 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace api.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;  
+
 
         public IBaseRepository<Post> posts { get; private set; }
         public IBaseRepository<Comment> comments { get; private set; }
@@ -22,6 +25,7 @@ namespace api.UnitOfWork
         public IUserEventsRepository userEvents { get; private set; }
         public IHobbiesRepository hobbies { get; private set; }
         public IFavoriteHobbiesRepository favoriteHobbies { get; private set; }
+        public UserManager<User> UserManager => _userManager;
 
 
 
