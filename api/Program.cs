@@ -19,10 +19,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-
 builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -96,6 +106,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddAuthorization();
+
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -109,10 +121,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 
 app.Run();
