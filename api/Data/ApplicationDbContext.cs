@@ -1,5 +1,6 @@
 ﻿using api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using api.Models;
 //using 
@@ -36,7 +37,7 @@ namespace api.Data
                 .IsRequired()
                 .HasDefaultValue(1);
 
-            // UserFavoriteHobby relation
+            // FavoriteHobby relations
             modelBuilder.Entity<FavoriteHobby>()
             .HasKey(ue => new { ue.UserId, ue.HobbyId });
 
@@ -50,13 +51,6 @@ namespace api.Data
             .HasOne(ue => ue.Hobby)
             .WithMany(e => e.FavoriteHobbies)
             .HasForeignKey(ue => ue.HobbyId);
-
-            // HobbySubHobbies relation
-            /*modelBuilder.Entity<Hobby>()
-                .HasOne(h => h.ParentHobby)
-                .WithMany(h => h.SubHobbies)
-                .HasForeignKey(h => h.ParentHobbyId)
-                .OnDelete(DeleteBehavior.Restrict);*/
 
             // PostComment relation
             modelBuilder.Entity<Comment>()
@@ -107,6 +101,10 @@ namespace api.Data
                     j => j.HasOne<User>().WithMany().HasForeignKey("FriendId").OnDelete(DeleteBehavior.Restrict),
                     j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Restrict)
                 );
+            modelBuilder.Entity<IdentityRole>().HasData(
+            new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
+            new IdentityRole { Name = "User", NormalizedName = "USER" }
+            );
         }
 
 
