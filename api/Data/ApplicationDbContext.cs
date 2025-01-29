@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Linq.Expressions;
 using api.Models;
 //using 
 
@@ -24,6 +25,20 @@ namespace api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var deletedAtProperty = entityType.FindProperty("DeletedAt");
+                if (deletedAtProperty != null && deletedAtProperty.ClrType == typeof(DateTime?))
+                {
+                    var parameter = Expression.Parameter(entityType.ClrType, "e");
+                    var property = Expression.Property(parameter, "DeletedAt");
+                    var nullConstant = Expression.Constant(null, typeof(DateTime?));
+                    var predicate = Expression.Lambda(Expression.Equal(property, nullConstant), parameter);
+
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(predicate);
+                }
+            }
+        
             base.OnModelCreating(modelBuilder);
 
             // Hobby Level Constraint
@@ -102,7 +117,7 @@ namespace api.Data
             modelBuilder.Entity<IdentityRole>().HasData(
             new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
             new IdentityRole { Name = "User", NormalizedName = "USER" }
-            );
+            );     
         }
 
 
