@@ -1,0 +1,80 @@
+.view-events-page {
+    font-family: Arial, sans-serif;
+}
+
+.search-container {
+    margin-bottom: 20px;
+}
+
+.create-event-button {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.create-event-button button {
+    padding: 10px 20px;
+    background-color: var(--color-secondary); 
+    color: white;
+    border-radius: 12px ;
+    border: none;
+    cursor: pointer;
+    margin-left: 460px;
+    width: 180px;
+
+}
+
+.view-events-container .content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: var(--color-light); 
+    width: 100%;
+    align-items: center;
+}
+
+.event-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.hobby-name {
+    font-size: 14px;
+    color: var(--color-muted);
+    margin-bottom: 5px; /* Espacement entre le nom du hobby et le nom de l'événement */
+}
+
+.event-name {
+    font-size: 14px;
+    
+    color: var( --color-dark) ;
+}
+
+.participate {
+    display: flex;
+    align-items: center;
+    color: var(--color-muted);
+    cursor: pointer;
+    font-size: 16px;
+  
+}
+
+.participate i {
+    margin-right: 8px;
+    font-size: 18px; 
+   
+}

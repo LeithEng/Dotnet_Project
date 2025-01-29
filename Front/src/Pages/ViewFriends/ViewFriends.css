@@ -1,0 +1,78 @@
+.view-friends-container {
+    display: flex;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    background-color: #f4f4f9;
+}
+
+.view-friends-container .content {
+    flex: 1;
+    padding: 20px;
+}
+
+.search-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 70%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.friends-count-container {
+    display: flex;
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    margin-bottom: 25px;
+ 
+}
+
+.friends-count {
+    font-size: 40px;
+    text-align: center; /* Centre le texte à l'intérieur de l'élément */
+}
+.friends-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.friend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border: 1px solid none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.friend-item span {
+    font-size: 16px;
+}
+
+.remove-icon {
+    font-size: 20px;
+    color: red;
+    cursor: pointer;
+}
+
+.view-friends-page {
+    padding: 20px; 
+    margin-top: 6%; 
+}
+.search-container {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1; 
+}
+
+.search {
+    width: 300px; 
+}

@@ -1,0 +1,60 @@
+.manage-admins-page {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100vh;
+    padding: 20px;
+    flex-direction: column; 
+}
+
+.menu-admin-container {
+    width: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    
+    align-items: center;
+    
+   padding: 10px;
+  
+    height: 100px;
+}
+
+.search {
+    width: 300px;
+}
+
+.admin-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 20px; 
+    flex-grow: 1;
+}
+
+.admin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px; 
+    background-color: white;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    width: 550px; 
+    border-radius: 5px; 
+}
+
+.admin-item .delete-button {
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+

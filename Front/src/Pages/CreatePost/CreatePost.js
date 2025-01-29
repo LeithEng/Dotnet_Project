@@ -1,5 +1,5 @@
 import React from "react";
-import Post from "../../components/post/post";
+import Post from "../../components/Post/post";
 import MenuUser from "../../components/MenuUser/MenuUser";
 import "./CreatePost.css";
 

@@ -5,12 +5,14 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MenuAdmin from './components/MenuAdmin/MenuAdmin';
 import RegisterForm from './components/RegisterForm/RegisterForm';
 import LoginForm from './components/LoginForm/LoginForm';
-import Post from './components/post/post';
+import ViewPost from './components/ViewPost/ViewPost';
 import CreatePost from './Pages/CreatePost/CreatePost';
 import HomePage from './Pages/HomePage/HomePage';
 import Login from './Pages/Login/Login';
 import Register from './Pages/Register/Register';
 import CreateEventPage from './Pages/CreateEvent/CreateEvent';
+import AddAdmin from './Pages/AddAdmin/AddAdmin';
+import ViewEvents from './Pages/ViewEvents/ViewEvents';
 function App() {
   return (
     <Router>
@@ -20,6 +22,9 @@ function App() {
         <Route path="/Login" element={<Login/>} />
         <Route path="/Register" element={<Register/>} />
         <Route path="/CreateEvent" element={<CreateEventPage/>} />
+        <Route path="/ViewPost" element={<ViewPost/>} />
+        <Route path="/AddAdmin" element={<AddAdmin/>} />
+        <Route path="/ViewEvents" element={<ViewEvents/>} />
       </Routes>
     </Router>
   );
