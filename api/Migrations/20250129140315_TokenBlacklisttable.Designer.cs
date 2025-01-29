@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250129140315_TokenBlacklisttable")]
+    partial class TokenBlacklisttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,13 +54,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2710fa00-2818-4006-ac2c-0aff9693c2d1",
+                            Id = "416b6bc7-18b1-4a66-b584-e32c53e145c5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "777a6f6b-cbc4-4eae-942c-51ebc66d3dc4",
+                            Id = "6416e3d2-3d88-48ac-a580-c4cd15eeb064",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -396,7 +399,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TokenBlacklist");
+                    b.ToTable("TokenBlacklists");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
