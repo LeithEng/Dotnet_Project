@@ -41,17 +41,32 @@ public class AuthenticationController : ControllerBase
             });
         }
 
-        var user = new User { UserName = registerDto.Email, Email = registerDto.Email, FirstName = registerDto.FirstName, LastName = registerDto.LastName, CreatedAt = DateTime.Now };
+        var user = new User { UserName = registerDto.Email, Email = registerDto.Email, FirstName = registerDto.FirstName, LastName = registerDto.LastName, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now };
         var result = await _userManager.CreateAsync(user, registerDto.Password);
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            return Ok(new { message = "User created successfully" });
+            return BadRequest(new
+            {
+                message = "User registration failed.",
+                errors = result.Errors.Select(e => e.Description).ToList()
+            });
+
         }
-        return BadRequest(new
+        var roleUserResult = await _userManager.AddToRoleAsync(user, "User");
+        if (!roleUserResult.Succeeded)
         {
-            message = "User registration failed.",
-            errors = result.Errors.Select(e => e.Description).ToList()
-        });
+            return BadRequest("Failed to assign User role.");
+        }
+
+        if (registerDto.isAdmin)
+        {
+            var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest("Failed to assign admin role.");
+            }
+        }
+        return Ok(new { message = "User created successfully" });
     }
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
@@ -76,6 +91,7 @@ public class AuthenticationController : ControllerBase
             token,
             message = "Login successful"
         });
+
     }
 
     private string GenerateJwtToken(User user, bool rememberMe)
@@ -85,7 +101,7 @@ public class AuthenticationController : ControllerBase
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique identifier for the token
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
