@@ -166,13 +166,12 @@ namespace api.Data
                 }
             );
 
-            // You can also seed related data for testing (e.g., FavoriteHobbies)
             modelBuilder.Entity<FavoriteHobby>().HasData(
                 new FavoriteHobby { HobbyId = "1", UserId = "user1" },
                 new FavoriteHobby { HobbyId = "2", UserId = "user2" }
             );
 
-            // Seed Events (optional)
+            // Seed Events 
             modelBuilder.Entity<Event>().HasData(
                 new Event
                 {
@@ -186,7 +185,7 @@ namespace api.Data
                 }
             );
 
-            // Seed UserEvents (optional)
+            // Seed UserEvents
             modelBuilder.Entity<UserEvent>().HasData(
                 new UserEvent { UserId = "user1", EventId = "event1", Rate = 5 }
             );

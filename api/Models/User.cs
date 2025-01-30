@@ -18,7 +18,6 @@ namespace api.Models
         public DateTime? DeletedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-
         public ICollection<Post> Posts { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Reaction> Reactions { get; set; }

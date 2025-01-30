@@ -15,7 +15,7 @@ namespace api.Models
 
         // Foreign Key for User (creator of the event)
         public string UserId { get; set; }
-        public User User { get; set; } // Navigation property to User (creator)
+        public User User { get; set; } 
 
         public ICollection<UserEvent> UserEvents { get; set; }
     }

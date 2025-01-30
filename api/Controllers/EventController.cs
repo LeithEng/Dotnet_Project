@@ -23,8 +23,6 @@ namespace api.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-
         // POST: api/Event
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] EventDto eventDto)
@@ -43,14 +41,12 @@ namespace api.Controllers
                 });
             }
 
-            // Ensure that the hobby exists
             var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == eventDto.HobbyId);
             if (hobby == null)
             {
                 return BadRequest(new { message = "Invalid Hobby ID provided." });
             }
 
-            // Ensure that the creator user exists
             var creatorUser = await _unitOfWork.UserManager.FindByIdAsync(eventDto.CreatedByUserId);
             if (creatorUser == null)
             {
@@ -70,16 +66,15 @@ namespace api.Controllers
                 HobbyId = eventDto.HobbyId,
                 Hobby = hobby,
                 // Set the CreatedByUserId to associate the event with the creator user
-                UserId = eventDto.CreatedByUserId // Ensure this is correctly set
+                UserId = eventDto.CreatedByUserId 
             };
 
             // Add the event to the repository
             await _unitOfWork.events.AddAsync(newEvent);
 
             // Commit the event save before proceeding with UserEvent
-            _unitOfWork.Complete(); // This should be fine if Complete is synchronous
+            _unitOfWork.Complete(); 
 
-            // Ensure the UserEvent association is correctly created
             var userEvent = new UserEvent
             {
                 UserId = eventDto.CreatedByUserId,
@@ -97,84 +92,12 @@ namespace api.Controllers
             }
 
 
-            // Commit the transaction to save all changes (UserEvent)
-            _unitOfWork.Complete(); // This should be fine if Complete is synchronous
+            _unitOfWork.Complete();
 
             // Return the created event
             return CreatedAtAction(nameof(GetEventById), new { id = newEvent.Id }, newEvent);
         }
 
-
-
-
-
-
-        //// POST: api/Event
-        //[HttpPost]
-        //public async Task<IActionResult> CreateEvent([FromBody] EventDto eventDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        var errors = ModelState.Values
-        //            .SelectMany(v => v.Errors)
-        //            .Select(e => e.ErrorMessage)
-        //            .ToList();
-
-        //        return BadRequest(new
-        //        {
-        //            message = "Validation failed.",
-        //            errors = errors
-        //        });
-        //    }
-
-        //    // Ensure that the hobby exists
-        //    var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == eventDto.HobbyId);
-        //    if (hobby == null)
-        //    {
-        //        return BadRequest(new { message = "Invalid Hobby ID provided." });
-        //    }
-
-        //    // Ensure that the creator user exists
-        //    var creatorUser = await _unitOfWork.UserManager.FindByIdAsync(eventDto.CreatedByUserId);
-        //    if (creatorUser == null)
-        //    {
-        //        return BadRequest(new { message = "Creator user does not exist." });
-        //    }
-        //    // Create the new event
-        //    var newEvent = new Event
-        //    {
-        //        Id = Guid.NewGuid().ToString(),
-        //        Name = eventDto.Name,
-        //        Description = eventDto.Description,
-        //        StartDate = eventDto.StartDate,
-        //        EndDate = eventDto.EndDate,
-        //        CreatedAt = DateTime.UtcNow,
-        //        UpdatedAt = DateTime.UtcNow,
-        //        HobbyId = eventDto.HobbyId,  // Associate with Hobby
-        //        Hobby = hobby,  // Set the Hobby navigation property
-        //    };
-
-        //    // Add the event to the repository
-        //    await _unitOfWork.events.AddAsync(newEvent);
-
-        //    // Create the UserEvent association for the creator user (the event creator)
-        //    var userEvent = new UserEvent
-        //    {
-        //        UserId = eventDto.CreatedByUserId,
-        //        EventId = newEvent.Id,
-        //        Event = newEvent,
-        //        Rate = null // You can set this as needed or leave it null initially
-        //    };
-
-        //    // Add the user event (creator) to the repository
-        //    await _unitOfWork.userEvents.AddAsync(userEvent);
-
-        //    // Save changes to the database
-        //    _unitOfWork.Complete();
-
-        //    // Return the created event
-        //    return CreatedAtAction(nameof(GetEventById), new { id = newEvent.Id }, newEvent);
-        //}
 
         // GET: api/Event/{id}
         [HttpGet("{id}")]
@@ -209,7 +132,6 @@ namespace api.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
-            // Ensure that the hobby exists (if a new HobbyId is provided)
             if (!string.IsNullOrEmpty(eventDto.HobbyId))
             {
                 var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == eventDto.HobbyId);
