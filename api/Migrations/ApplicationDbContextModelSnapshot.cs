@@ -51,13 +51,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2710fa00-2818-4006-ac2c-0aff9693c2d1",
+                            Id = "60ea9647-a6b2-4c49-baf0-b9a27aa631e8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "777a6f6b-cbc4-4eae-942c-51ebc66d3dc4",
+                            Id = "7cb8018f-c672-49eb-a787-a8289f2b031c",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -407,8 +407,8 @@ namespace api.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Avatar")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Avatar")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

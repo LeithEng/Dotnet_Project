@@ -18,4 +18,5 @@ public class RegisterDto
     [DataType(DataType.Password)]
     [Compare("Password", ErrorMessage = "Passwords do not match!")]
     public string ConfirmPassword { get; set; }
+    public bool isAdmin { get; internal set; } = false;
 }
