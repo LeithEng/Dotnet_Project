@@ -1,13 +1,14 @@
 
+
 import './MenuAdmin.css'
 import profilePic from '../../assets/images/ProfilePic.png';
-import "@fortawesome/fontawesome-free/css/all.min.css";
+
 
 function MenuAdmin() {
   return (
     <div className="menu-container">
       <div className="profile-section">
-        <img src="" alt="Profile" className="profile-pic" />
+      <img src={profilePic} alt="Profile" className="profile-pic" />
         <div className="adminame">Adminname</div>
       </div>
       <ul className="menu-list">
