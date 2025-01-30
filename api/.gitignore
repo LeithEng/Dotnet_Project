@@ -1,2 +1,14 @@
 # Ignore Visual Studio folder
 .vs/
+.api/Migrations/
+.api/appsettings.json
+.Migrations/
+.appsettings.json
+
+api/bin/
+api/obj/
+*.pdb
+*.dll
+*.exe
+*.json
+*.cache

@@ -58,7 +58,7 @@ namespace api.Data
                 .HasOne(e => e.Hobby)
                 .WithMany(h => h.Events)
                 .HasForeignKey(e => e.HobbyId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
+                .OnDelete(DeleteBehavior.Restrict); 
 
 
 

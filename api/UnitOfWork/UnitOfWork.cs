@@ -15,7 +15,8 @@ namespace api.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;  
+        private readonly UserManager<User> _userManager;
+
 
 
         public IBaseRepository<Post> posts { get; private set; }
@@ -29,9 +30,11 @@ namespace api.UnitOfWork
 
 
 
-        public UnitOfWork(ApplicationDbContext context)
+        public UnitOfWork(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager; 
+
             // Initializing repositories
             posts = new BaseRepository<Post>(_context);
             comments = new BaseRepository<Comment>(_context);
