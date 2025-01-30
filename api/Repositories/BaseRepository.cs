@@ -83,6 +83,7 @@ namespace Repositories
 
         public async Task<T> AddAsync(T entity)
         {
+            entity.GetType().GetProperty("CreatedAt")?.SetValue(entity, DateTime.UtcNow);
             await _context.Set<T>().AddAsync(entity);
             return entity;
         }
@@ -91,12 +92,22 @@ namespace Repositories
 
         public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
         {
+            foreach (var entity in entities)
+            {
+                var createdAtProperty = entity.GetType().GetProperty("CreatedAt");
+                if (createdAtProperty != null && createdAtProperty.CanWrite)
+                {
+                    createdAtProperty.SetValue(entity, DateTime.UtcNow);
+                }
+            }
             await _context.Set<T>().AddRangeAsync(entities);
             return entities;
         }
 
+
         public T Update(T entity)
         {
+            entity.GetType().GetProperty("UpdatedAt")?.SetValue(entity, DateTime.UtcNow);
             _context.Update(entity);
             return entity;
         }
@@ -110,6 +121,12 @@ namespace Repositories
         {
             _context.Set<T>().RemoveRange(entities);
         }
+        public void SoftDelete(T entity)
+        {
+            entity.GetType().GetProperty("DeletedAt")?.SetValue(entity, DateTime.UtcNow);
+            _context.Set<T>().Update(entity);
+        }
+
 
 
         public async Task<int> CountAsync()
