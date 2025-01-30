@@ -307,6 +307,47 @@ namespace api.Controllers
             });
         }
 
+
+
+        // POST: api/Event/RateEvent
+        [HttpPost("{eventId}/rate")]
+        public async Task<IActionResult> RateEvent(string eventId, [FromBody] RatingDto ratingDto)
+        {
+            if (ratingDto == null || ratingDto.Rate == null)
+            {
+                return BadRequest(new { message = "Rating is required." });
+            }
+
+            // Fetch the event
+            var eventItem = await _unitOfWork.events.GetByIdAsync(eventId);
+            if (eventItem == null)
+            {
+                return NotFound(new { message = "Event not found." });
+            }
+
+            // Fetch the user event (check if the user has participated in the event)
+            var userEvent = await _unitOfWork.userEvents.FindAsync(ue => ue.EventId == eventId && ue.UserId == ratingDto.UserId);
+            if (userEvent == null)
+            {
+                return BadRequest(new { message = "User has not participated in the event." });
+            }
+
+            // Validate the rating value (e.g., check if it's within an acceptable range)
+            if (ratingDto.Rate < 1 || ratingDto.Rate > 5)
+            {
+                return BadRequest(new { message = "Rating must be between 1 and 5." });
+            }
+
+            // Update the user's rating for the event
+            userEvent.Rate = ratingDto.Rate;
+
+            // Save the changes
+            _unitOfWork.userEvents.Update(userEvent);
+            _unitOfWork.Complete();
+
+            return Ok(new { message = "Rating successfully updated." });
+        }
+
     }
 }
 

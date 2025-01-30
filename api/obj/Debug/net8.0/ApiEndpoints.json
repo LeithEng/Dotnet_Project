@@ -79,6 +79,27 @@
   },
   {
     "ContainingType": "api.Controllers.EventController",
+    "Method": "RateEvent",
+    "RelativePath": "api/Event/{eventId}/rate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "eventId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "ratingDto",
+        "Type": "api.DTOs.RatingDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "api.Controllers.EventController",
     "Method": "GetEventById",
     "RelativePath": "api/Event/{id}",
     "HttpMethod": "GET",
