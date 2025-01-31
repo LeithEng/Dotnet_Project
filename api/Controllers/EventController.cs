@@ -219,10 +219,46 @@ namespace api.Controllers
             return Ok(events);
         }
 
-        // PUT: api/Event/{id}
+        // [HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateEvent(string id, [FromBody] EventDto eventDto)
+        //{
+        //    // Fetch the event to be updated
+        //    var eventToUpdate = await _unitOfWork.events.GetByIdAsync(id);
+        //    if (eventToUpdate == null)
+        //    {
+        //        return NotFound(new { message = "Event not found." });
+        //    }
+
+        //    if (!string.IsNullOrEmpty(eventDto.HobbyId))
+        //    {
+        //        var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == eventDto.HobbyId);
+        //        if (hobby == null)
+        //        {
+        //            return BadRequest(new { message = "Invalid Hobby ID provided." });
+        //        }
+        //        // Set the HobbyId and Hobby navigation property to the new hobby
+        //        eventToUpdate.HobbyId = eventDto.HobbyId;
+        //        eventToUpdate.Hobby = hobby;
+        //    }
+
+        //    _mapper.Map(eventDto, eventToUpdate);
+        //    eventToUpdate.UpdatedAt = DateTime.UtcNow;
+
+
+        //    // Save the changes
+        //    _unitOfWork.events.Update(eventToUpdate);
+        //    _unitOfWork.Complete();
+
+        //    return Ok(new { message = "Event updated successfully." });
+        //}
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvent(string id, [FromBody] EventDto eventDto)
         {
+            // Retrieve the current user ID from the JWT token
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             // Fetch the event to be updated
             var eventToUpdate = await _unitOfWork.events.GetByIdAsync(id);
             if (eventToUpdate == null)
@@ -230,6 +266,13 @@ namespace api.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
+            // Check if the current user is the creator of the event
+            if (eventToUpdate.UserId != currentUserId)
+            {
+                return Unauthorized(new { message = "You are not authorized to update this event." });
+            }
+
+            // Check and set the HobbyId if provided
             if (!string.IsNullOrEmpty(eventDto.HobbyId))
             {
                 var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == eventDto.HobbyId);
@@ -237,14 +280,13 @@ namespace api.Controllers
                 {
                     return BadRequest(new { message = "Invalid Hobby ID provided." });
                 }
-                // Set the HobbyId and Hobby navigation property to the new hobby
                 eventToUpdate.HobbyId = eventDto.HobbyId;
                 eventToUpdate.Hobby = hobby;
             }
 
+            // Map the updated data to the event
             _mapper.Map(eventDto, eventToUpdate);
             eventToUpdate.UpdatedAt = DateTime.UtcNow;
-
 
             // Save the changes
             _unitOfWork.events.Update(eventToUpdate);
@@ -253,23 +295,66 @@ namespace api.Controllers
             return Ok(new { message = "Event updated successfully." });
         }
 
-        // DELETE: api/Event/{id}
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(string id)
         {
+            // Retrieve the current user ID from the JWT token
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Fetch the event from the database
             var eventToDelete = await _unitOfWork.events.GetByIdAsync(id);
             if (eventToDelete == null)
             {
                 return NotFound(new { message = "Event not found." });
             }
 
-             _unitOfWork.events.SoftDelete(eventToDelete);
-             _unitOfWork.Complete();
+            // Check if the current user is the creator of the event
+            if (eventToDelete.UserId != currentUserId)
+            {
+                return Unauthorized(new { message = "You are not authorized to delete this event." });
+            }
+
+            // Perform soft delete
+            _unitOfWork.events.SoftDelete(eventToDelete);
+            _unitOfWork.Complete();
 
             return Ok(new { message = "Event deleted successfully." });
         }
 
+        // DELETE: api/Event/{id}
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteEvent(string id)
+        //{
+        //    var eventToDelete = await _unitOfWork.events.GetByIdAsync(id);
+        //    if (eventToDelete == null)
+        //    {
+        //        return NotFound(new { message = "Event not found." });
+        //    }
+
+        //     _unitOfWork.events.SoftDelete(eventToDelete);
+        //     _unitOfWork.Complete();
+
+        //    return Ok(new { message = "Event deleted successfully." });
+        //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Search events by Hobby ID
+        
         [HttpGet("searchByHobby")]
         public async Task<IActionResult> SearchEventsByHobby([FromQuery] string hobbyId)
         {
@@ -286,7 +371,6 @@ namespace api.Controllers
             }
                 return Ok(events);
         }
-
 
         // Search events by Name (case-insensitive search)
         [HttpGet("search")]
@@ -446,45 +530,7 @@ namespace api.Controllers
             return Ok(new { message = "Rating submitted successfully." });
         }
 
-        //public async Task<IActionResult> RateEvent(string eventId, [FromBody] RatingDto ratingDto)
-        //{
-        //    if (ratingDto == null || ratingDto.Rate == null)
-        //    {
-        //        return BadRequest(new { message = "Rating is required." });
-        //    }
-
-        //    // Fetch the event
-        //    var eventItem = await _unitOfWork.events.GetByIdAsync(eventId);
-        //    if (eventItem == null)
-        //    {
-        //        return NotFound(new { message = "Event not found." });
-        //    }
-
-        //    // Fetch the user event (check if the user has participated in the event)
-        //    var userEvent = await _unitOfWork.userEvents.FindAsync(ue => ue.EventId == eventId && ue.UserId == ratingDto.UserId);
-        //    if (userEvent == null)
-        //    {
-        //        return BadRequest(new { message = "User has not participated in the event." });
-        //    }
-
-        //    // Validate the rating value (e.g., check if it's within an acceptable range)
-        //    if (ratingDto.Rate < 1 || ratingDto.Rate > 5)
-        //    {
-        //        return BadRequest(new { message = "Rating must be between 1 and 5." });
-        //    }
-
-        //    // Update the user's rating for the event
-        //    userEvent.Rate = ratingDto.Rate;
-
-        //    // Save the changes
-        //    _unitOfWork.userEvents.Update(userEvent);
-        //    _unitOfWork.Complete();
-
-        //    return Ok(new { message = "Rating successfully updated." });
-        //}
-
-
-
+       
 
     }
 }

@@ -9,6 +9,7 @@ public class MappingProfile : Profile
     {
         CreateMap<PostDto, Post>().ReverseMap();
         CreateMap<EventDto, Event>().ReverseMap();
+        CreateMap<EventDto, Comment>().ReverseMap();
 
     }
 }

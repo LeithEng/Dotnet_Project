@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace api.Controllers
@@ -119,16 +120,27 @@ namespace api.Controllers
             return Ok(randomPosts);
         }
 
-        // PUT: api/Post/{id}
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePost(string id, [FromBody] PostDto postDto)
         {
+            // Retrieve the current user ID from the JWT token
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Fetch the post from the database
             var postToUpdate = await _unitOfWork.posts.GetByIdAsync(id);
             if (postToUpdate == null)
             {
                 return NotFound(new { message = "Post not found." });
             }
 
+            // Check if the current user is the creator of the post
+            if (postToUpdate.UserId != currentUserId)
+            {
+                return Unauthorized(new { message = "You are not authorized to update this post." });
+            }
+
+            // Check if the hobby ID provided is valid
             if (!string.IsNullOrEmpty(postDto.HobbyId))
             {
                 var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == postDto.HobbyId);
@@ -140,35 +152,90 @@ namespace api.Controllers
                 postToUpdate.Hobby = hobby;
             }
 
-            //postToUpdate.Content = postDto.Content;
-            //postToUpdate.ImageUrl = postDto.ImageUrl;
-            //postToUpdate.UpdatedAt = DateTime.UtcNow;
-
+            // Map the updated postDto properties to the postToUpdate entity
             _mapper.Map(postDto, postToUpdate);
             postToUpdate.UpdatedAt = DateTime.UtcNow;
 
-
+            // Update the post in the database
             _unitOfWork.posts.Update(postToUpdate);
             _unitOfWork.Complete();
 
             return Ok(new { message = "Post updated successfully." });
         }
 
+        //// PUT: api/Post/{id}
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdatePost(string id, [FromBody] PostDto postDto)
+        //{
+        //    var postToUpdate = await _unitOfWork.posts.GetByIdAsync(id);
+        //    if (postToUpdate == null)
+        //    {
+        //        return NotFound(new { message = "Post not found." });
+        //    }
+
+        //    if (!string.IsNullOrEmpty(postDto.HobbyId))
+        //    {
+        //        var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == postDto.HobbyId);
+        //        if (hobby == null)
+        //        {
+        //            return BadRequest(new { message = "Invalid Hobby ID provided." });
+        //        }
+        //        postToUpdate.HobbyId = postDto.HobbyId;
+        //        postToUpdate.Hobby = hobby;
+        //    }
+
+        //    _mapper.Map(postDto, postToUpdate);
+        //    postToUpdate.UpdatedAt = DateTime.UtcNow;
+
+
+        //    _unitOfWork.posts.Update(postToUpdate);
+        //    _unitOfWork.Complete();
+
+        //    return Ok(new { message = "Post updated successfully." });
+        //}
+
         // DELETE: api/Post/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(string id)
         {
+            // Retrieve the current user ID from the JWT token
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Fetch the post from the database
             var postToDelete = await _unitOfWork.posts.GetByIdAsync(id);
             if (postToDelete == null)
             {
                 return NotFound(new { message = "Post not found." });
             }
 
+            // Check if the current user is the creator of the post
+            if (postToDelete.UserId != currentUserId)
+            {
+                return Unauthorized(new { message = "You are not authorized to delete this post." });
+            }
+
+            // Proceed with deleting the post
             _unitOfWork.posts.SoftDelete(postToDelete);
             _unitOfWork.Complete();
 
             return Ok(new { message = "Post deleted successfully." });
         }
+
+
+
+        //public async Task<IActionResult> DeletePost(string id)
+        //{
+        //    var postToDelete = await _unitOfWork.posts.GetByIdAsync(id);
+        //    if (postToDelete == null)
+        //    {
+        //        return NotFound(new { message = "Post not found." });
+        //    }
+
+        //    _unitOfWork.posts.SoftDelete(postToDelete);
+        //    _unitOfWork.Complete();
+
+        //    return Ok(new { message = "Post deleted successfully." });
+        //}
 
         // Search posts by Hobby ID
         [HttpGet("searchByHobby")]
