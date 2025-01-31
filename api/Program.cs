@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using api.UnitOfWork;
+using api.DTOs;
+using api.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,13 +18,22 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-
+builder.Services.AddScoped<AuthenticationController>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-
-builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = false)
+builder.Services.AddIdentity<User, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = false; options.User.RequireUniqueEmail = true; })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        builder => builder.WithOrigins("http://localhost:3000") 
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()); // This allows cookies to be sent
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -43,6 +54,28 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = async context =>
+        {
+            var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                using (var scope = context.HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var isBlacklisted = await dbContext.TokenBlacklist.AnyAsync(t => t.Token == token);
+
+                    if (isBlacklisted)
+                    {
+                        context.Fail("This token has been revoked.");
+                        return;
+                    }
+                }
+            }
+        }
     };
 });
 builder.Services.AddSwaggerGen(c =>
@@ -74,6 +107,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddAuthorization();
+
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -85,12 +120,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-
-app.MapControllers();
+//app.UseHttpsRedirection();
+app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 
 app.Run();
