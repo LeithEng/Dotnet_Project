@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import './MenuAdmin.css'
+import './MenuUser.css';
 import profilePic from '../../assets/images/ProfilePic.png';
 
-
-function MenuAdmin() {
-
+function MenuUser() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -33,17 +31,14 @@ function MenuAdmin() {
   return (
     <div className="menu-container">
       <div className="profile-section">
-      <img src={profilePic} alt="Profile" className="profile-pic" />
-        <div className="adminame">Adminname</div>
+        <img src={profilePic} alt="Profile" className="profile-pic" />
+        <div className="username">Username</div>
       </div>
       <ul className="menu-list">
-        <li>Add admin</li>
-        <li>Add role</li>
-        <li>Dashboard</li>
-        <li>Manage admins</li>
-        <li>Manage roles</li>
-        <li>Manage hobbies</li>
-        <li>Manage users</li>
+        <li>Hobbies</li>
+        <li>Events</li>
+        <li>Friends</li>
+        <li>Pay Premium Membership</li>
       </ul>
       <div className="logout-container" onClick={handleLogout}>
         <i className="fa-solid fa-right-from-bracket logout-icon"></i>
@@ -53,4 +48,4 @@ function MenuAdmin() {
   );
 }
 
-export default MenuAdmin;
+export default MenuUser;
