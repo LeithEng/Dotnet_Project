@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using api.DTOs;
-using api.UnitOfWork;
+﻿using api.DTOs;
+using api.Interfaces;
 using api.Models;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
-using api.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
@@ -25,7 +19,7 @@ namespace api.Controllers
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-           
+
         }
 
         // GET: api/Hobby/first-level
@@ -60,12 +54,12 @@ namespace api.Controllers
 
         // POST: api/Hobby
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateHobby([FromForm] HobbyDto hobbyDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var hobby = new Hobby();
+            var hobby = _mapper.Map<Hobby>(hobbyDto);
             hobby.Id = Guid.NewGuid().ToString(); // Auto-generate ID
 
             await _unitOfWork.hobbies.AddAsync(hobby);
@@ -77,7 +71,7 @@ namespace api.Controllers
 
         // PUT: api/Hobby/{id}
         [HttpPut("update/{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UpdateHobby(string id, [FromForm] HobbyDto hobbyDto)
         {
@@ -97,7 +91,7 @@ namespace api.Controllers
 
         // DELETE: api/Hobby/{id}
         [HttpDelete("delete/{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteHobby(string id)
         {
             var hobby = await _unitOfWork.hobbies.GetByIdAsync(id);

@@ -5,7 +5,7 @@ namespace api.Models
     {
         public string Id { get; set; }
         public byte[]? IconPicture { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
         public string? ParentHobbyId { get; set; }

@@ -8,7 +8,7 @@ namespace api.Models
 {
     public class User : IdentityUser
     {
-        public string? Avatar { get; set; }
+        public byte[]? Avatar { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         //manest7akouch isVerified fama emailConfirmed min aand identity 
@@ -24,7 +24,7 @@ namespace api.Models
         public ICollection<Reaction> Reactions { get; set; }
         public ICollection<UserEvent> UserEvents { get; set; }
         public ICollection<FavoriteHobby> FavoriteHobbies { get; set; }
-        public ICollection<User> Friends { get; set; }
+        public ICollection<User> Friends { get; set; } = new List<User>();
     }
 
 

@@ -9,6 +9,8 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using api.UnitOfWork;
 using Repositories;
+using api.DTOs;
+using api.Mapping;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,10 +21,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-
+builder.Services.AddScoped<AuthenticationController>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = false)
+builder.Services.AddIdentity<User, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = false; options.User.RequireUniqueEmail = true; })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
