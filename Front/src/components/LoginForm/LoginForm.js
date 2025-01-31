@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie"; 
 import "./LoginForm.css";
 
@@ -11,8 +12,7 @@ function Login() {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false); // État pour gérer la connexion
-  const [cookieValue, setCookieValue] = useState(""); // État pour stocker la valeur du cookie
+  const navigate = useNavigate(); // Initialize navigate function
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,7 +28,7 @@ function Login() {
     setMessage("");
 
     try {
-      const response = await fetch("http://localhost:5073/api/Authentication/Login", {
+      const response = await fetch("http://localhost:5073/api/authentication/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,21 +43,20 @@ function Login() {
       }
 
       setMessage(data.message);
-      setLoggedIn(true); // Mettez à jour l'état de connexion
 
-      // Stocker le token dans sessionStorage
+      // Store the token
       sessionStorage.setItem("token", data.token);
 
-      // Stocker le token dans un cookie
+      // Store token in a cookie (optional)
       const cookieOptions = {
         expires: formData.rememberMe ? 7 : 1,
         secure: true,
         sameSite: "strict",
       };
-      Cookies.set("token", data.token, cookieOptions);
+      Cookies.set("token", JSON.stringify(data.token.result), cookieOptions);
 
-      // Tester la valeur du cookie après la connexion
-      setCookieValue(Cookies.get("token")); // Récupérer la valeur du cookie
+      // Redirect to Profile Page
+      navigate("/Profile");
 
     } catch (err) {
       setError(err.message);
@@ -114,8 +113,6 @@ function Login() {
           {error && <p className="error">{error}</p>}
           {message && <p className="success">{message}</p>}
         </form>
-        
-       
       </div>
     </div>
   );
