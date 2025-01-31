@@ -11,7 +11,7 @@ namespace api.Models
         public byte[]? Avatar { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        //manest7akouch isVerified fama emailConfirmed min aand identity
+        //manest7akouch isVerified fama emailConfirmed min aand identity 
         //public bool IsVerified { get; set; }=false;
         public bool IsPremium { get; set; } = false;
         public DateTime CreatedAt { get; set; }
