@@ -1,30 +1,105 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import MenuUser from "../../components/MenuUser/MenuUser";
 import "./ViewProfile.css";
 
 const ViewProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
-    name: 'Hiba Chabbouh',
-    photo: '/images/user-photo.jpg',
-    firstName: 'Hiba',
-    lastName: 'Chabbouh',
-    email: 'hibachabbouh@gmail.com',
-    birthDate: '2002-06-26'
+    name: '',
+    photo: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
+  const token = Cookies.get("token");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const token = Cookies.get("token").slice(1,-1);
+
+console.log("Retrieved token:", token); // Debugging step
+
+if (!token) {
+  console.error("No authentication token found!");
+  return;
+}
+
+try {
+  const response = await fetch("http://localhost:5073/api/User/GetProfile", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, // Include token in request headers
+    },
   });
 
-  // Fonction pour activer/désactiver le mode édition
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user profile. Status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log("User data:", data); 
+        setUser({
+          name: `${data.firstName} ${data.lastName}`,
+          photo: data.avatar || "/images/default-avatar.jpg",
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+        });
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [token]);
+
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
 
-  // Fonction pour mettre à jour les données de l'utilisateur
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser(prevUser => ({
       ...prevUser,
       [name]: value
     }));
+  };
+
+  const handleSave = async () => {
+    const token = Cookies.get("token");
+
+    if (!token) {
+      console.error("No authentication token found!");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5073/api/User/UpdateProfile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          userName: user.firstName + user.lastName, // assuming username is first + last name
+          password: "YourPassword123!", // Replace this with actual password handling
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      alert("Profile updated successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   return (
@@ -90,14 +165,14 @@ const ViewProfile = () => {
                 <span className="value">{user.email}</span>
               )}
             </div>
-           
           </div>
 
-          {/* Bouton EditProfile */}
           <div className="edit-profile-btn">
-            <button onClick={toggleEdit}>
-              {isEditing ? 'Save Changes' : 'Edit Profile'}
-            </button>
+            {isEditing ? (
+              <button onClick={handleSave}>Save Changes</button>
+            ) : (
+              <button onClick={toggleEdit}>Edit Profile</button>
+            )}
           </div>
         </div>
       </div>
