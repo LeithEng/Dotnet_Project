@@ -9,6 +9,8 @@ namespace api.DTOs
         [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; }
 
+        public byte[]? IconPicture { get; set; }
+
         [Required(ErrorMessage = "Level is required")]
         public int Level { get; set; }
         public string? ParentHobbyId { get; set; }

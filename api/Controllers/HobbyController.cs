@@ -61,24 +61,25 @@ namespace api.Controllers
         // POST: api/Hobby
         [HttpPost]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> CreateHobby([FromForm] HobbyDto hobbyDto, [FromForm] IFormFile? iconPictureFile)
+        public async Task<IActionResult> CreateHobby([FromForm] HobbyDto hobbyDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var hobby = _mapper.Map<Hobby>(hobbyDto);
+            var hobby = new Hobby();
             hobby.Id = Guid.NewGuid().ToString(); // Auto-generate ID
 
             await _unitOfWork.hobbies.AddAsync(hobby);
-             _unitOfWork.Complete();
+            _unitOfWork.Complete();
 
             return CreatedAtAction(nameof(GetHobby), new { id = hobby.Id }, _mapper.Map<HobbyDto>(hobby));
+
         }
 
         // PUT: api/Hobby/{id}
         [HttpPut("update/{id}")]
         [Authorize(Roles = "ADMIN")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateHobby(string id, [FromForm] HobbyDto hobbyDto, [FromForm] IFormFile? iconPictureFile)
+        public async Task<IActionResult> UpdateHobby(string id, [FromForm] HobbyDto hobbyDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -104,9 +105,9 @@ namespace api.Controllers
                 return NotFound(new { message = "Hobby not found." });
 
             _unitOfWork.hobbies.SoftDelete(hobby);
-             _unitOfWork.Complete();
+            _unitOfWork.Complete();
 
-            return  NoContent();
+            return NoContent();
         }
 
     }
