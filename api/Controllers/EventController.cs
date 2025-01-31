@@ -9,19 +9,87 @@ using System.Threading.Tasks;
 using api.UnitOfWork;
 using api.Consts;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using System.Security.Claims;
+
 
 namespace api.Controllers
 {
+
+    [Authorize]  // Restrict access to authenticated users
     [Route("api/[controller]")]
     [ApiController]
     public class EventController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public EventController(IUnitOfWork unitOfWork)
+        public EventController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
+
+
+        //public async Task<IActionResult> CreateEvent([FromBody] EventDto eventDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var errors = ModelState.Values
+        //            .SelectMany(v => v.Errors)
+        //            .Select(e => e.ErrorMessage)
+        //            .ToList();
+
+        //        return BadRequest(new
+        //        {
+        //            message = "Validation failed.",
+        //            errors = errors
+        //        });
+        //    }
+
+        //    var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == eventDto.HobbyId);
+        //    if (hobby == null)
+        //    {
+        //        return BadRequest(new { message = "Invalid Hobby ID provided." });
+        //    }
+
+        //    var creatorUser = await _unitOfWork.UserManager.FindByIdAsync(eventDto.CreatedByUserId);
+        //    if (creatorUser == null)
+        //    {
+        //        return BadRequest(new { message = "Creator user does not exist." });
+        //    }
+
+        //    // Create the new event
+        //    var newEvent = _mapper.Map<Event>(eventDto);
+        //    newEvent.Id = Guid.NewGuid().ToString();
+        //    //newEvent.CreatedAt = DateTime.UtcNow;
+        //    //newEvent.UpdatedAt = DateTime.UtcNow;
+        //    newEvent.UserId = eventDto.CreatedByUserId; // Ensure the userId is set correctly
+
+        //    // Add the event to the repository
+        //    await _unitOfWork.events.AddAsync(newEvent);
+
+        //    // Create the user event (creator)
+        //    var userEvent = new UserEvent
+        //    {
+        //        UserId = eventDto.CreatedByUserId,
+        //        EventId = newEvent.Id,
+        //        Event = newEvent,
+        //        Rate = null
+        //    };
+
+        //    // Add the user event (creator) to the repository
+        //    await _unitOfWork.userEvents.AddAsync(userEvent);
+
+        //    // Commit the event save and user event save
+        //    _unitOfWork.Complete();
+
+        //    // Return the created event
+        //    return CreatedAtAction(nameof(GetEventById), new { id = newEvent.Id }, newEvent);
+        //}
+
+
 
         // POST: api/Event
         [HttpPost]
@@ -47,59 +115,89 @@ namespace api.Controllers
                 return BadRequest(new { message = "Invalid Hobby ID provided." });
             }
 
-            var creatorUser = await _unitOfWork.UserManager.FindByIdAsync(eventDto.CreatedByUserId);
+            // Get the currently authenticated user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get user ID from claims
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new { message = "Creator user ID is missing or invalid." });
+            }
+
+            var creatorUser = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (creatorUser == null)
             {
                 return BadRequest(new { message = "Creator user does not exist." });
             }
 
             // Create the new event
-            var newEvent = new Event
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = eventDto.Name,
-                Description = eventDto.Description,
-                StartDate = eventDto.StartDate,
-                EndDate = eventDto.EndDate,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                HobbyId = eventDto.HobbyId,
-                Hobby = hobby,
-                // Set the CreatedByUserId to associate the event with the creator user
-                UserId = eventDto.CreatedByUserId 
-            };
+            var newEvent = _mapper.Map<Event>(eventDto);
+            newEvent.Id = Guid.NewGuid().ToString();
+            newEvent.UserId = userId; // Set UserId to the currently authenticated user
 
             // Add the event to the repository
             await _unitOfWork.events.AddAsync(newEvent);
 
-            // Commit the event save before proceeding with UserEvent
-            _unitOfWork.Complete(); 
-
-            var userEvent = new UserEvent
-            {
-                UserId = eventDto.CreatedByUserId,
-                EventId = newEvent.Id,
-                Event = newEvent,
-                Rate = null
-            };
-
-            // Add the user event (creator) to the repository
-            await _unitOfWork.userEvents.AddAsync(userEvent);
-
-            if (string.IsNullOrEmpty(eventDto.CreatedByUserId))
-            {
-                return BadRequest(new { message = "Creator user ID cannot be null or empty." });
-            }
-
-
+            // Commit the event save and user event save
             _unitOfWork.Complete();
 
             // Return the created event
             return CreatedAtAction(nameof(GetEventById), new { id = newEvent.Id }, newEvent);
+
         }
 
+        // POST: api/Event/Participate/{eventId}
+        [HttpPost("Participate/{eventId}")]
+        public async Task<IActionResult> Participate(string eventId)
+        {
+            // Get the currently authenticated user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get user ID from claims
 
-        // GET: api/Event/{id}
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new { message = "User is not authenticated." });
+            }
+
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return BadRequest(new { message = "User does not exist." });
+            }
+
+            // Find the event by its ID
+            var eventEntity = await _unitOfWork.events.FindAsync(e => e.Id == eventId);
+            if (eventEntity == null)
+            {
+                return NotFound(new { message = "Event not found." });
+            }
+
+            // Check if the user is already participating in the event
+            var existingUserEvent = await _unitOfWork.userEvents
+                .FindAsync(ue => ue.UserId == userId && ue.EventId == eventId);
+
+            if (existingUserEvent != null)
+            {
+                return BadRequest(new { message = "User is already a participant in this event." });
+            }
+
+            // Create the UserEvent for the participant
+            var userEvent = new UserEvent
+            {
+                UserId = userId,
+                EventId = eventId,
+                Event = eventEntity,
+                Rate = null // Optionally, set the initial rating if applicable
+            };
+
+            // Add the user event to the repository
+            await _unitOfWork.userEvents.AddAsync(userEvent);
+
+            // Commit the user event save
+            _unitOfWork.Complete();
+
+            // Return success message
+            return Ok(new { message = "User successfully added to the event." });
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEventById(string id)
         {
@@ -144,12 +242,9 @@ namespace api.Controllers
                 eventToUpdate.Hobby = hobby;
             }
 
-            // Update other properties
-            eventToUpdate.Name = eventDto.Name;
-            eventToUpdate.Description = eventDto.Description;
-            eventToUpdate.StartDate = eventDto.StartDate;
-            eventToUpdate.EndDate = eventDto.EndDate;
+            _mapper.Map(eventDto, eventToUpdate);
             eventToUpdate.UpdatedAt = DateTime.UtcNow;
+
 
             // Save the changes
             _unitOfWork.events.Update(eventToUpdate);
@@ -168,7 +263,7 @@ namespace api.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
-             _unitOfWork.events.Delete(eventToDelete);
+             _unitOfWork.events.SoftDelete(eventToDelete);
              _unitOfWork.Complete();
 
             return Ok(new { message = "Event deleted successfully." });
@@ -185,12 +280,11 @@ namespace api.Controllers
 
             var events = await _unitOfWork.events.FindAllAsync(e => e.HobbyId == hobbyId);
 
-            if (!events.Any())
+            if (events == null || !events.Any())
             {
                 return NotFound(new { message = "No events found for the specified hobby." });
             }
-
-            return Ok(events);
+                return Ok(events);
         }
 
 
@@ -307,46 +401,90 @@ namespace api.Controllers
             });
         }
 
-
-
         // POST: api/Event/RateEvent
         [HttpPost("{eventId}/rate")]
-        public async Task<IActionResult> RateEvent(string eventId, [FromBody] RatingDto ratingDto)
+        [HttpPost("rate/{eventId}")]
+        public async Task<IActionResult> RateEvent(string eventId, [FromBody] RateDto rateDto)
         {
-            if (ratingDto == null || ratingDto.Rate == null)
+            // Ensure the user is authenticated and get the current userId
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assuming the user ID is stored in the claims
+
+            if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest(new { message = "Rating is required." });
+                return Unauthorized(new { message = "User is not authenticated." });
             }
 
-            // Fetch the event
-            var eventItem = await _unitOfWork.events.GetByIdAsync(eventId);
-            if (eventItem == null)
+            // Check if the event exists
+            var existingEvent = await _unitOfWork.events.FindAsync(e => e.Id == eventId);
+            if (existingEvent == null)
             {
                 return NotFound(new { message = "Event not found." });
             }
 
-            // Fetch the user event (check if the user has participated in the event)
-            var userEvent = await _unitOfWork.userEvents.FindAsync(ue => ue.EventId == eventId && ue.UserId == ratingDto.UserId);
-            if (userEvent == null)
+            // Check if the user is already a participant in the event
+            var existingUserEvent = await _unitOfWork.userEvents
+                  .FindAsync(ue => ue.UserId == userId && ue.EventId == eventId);
+
+            if (existingUserEvent == null)
             {
-                return BadRequest(new { message = "User has not participated in the event." });
+                return BadRequest(new { message = "User is not a participant in this event." });
             }
 
-            // Validate the rating value (e.g., check if it's within an acceptable range)
-            if (ratingDto.Rate < 1 || ratingDto.Rate > 5)
+
+            // Rating validation - ensure the rate is between 1 and 5
+            if (rateDto.Rate < 1 || rateDto.Rate > 5)
             {
                 return BadRequest(new { message = "Rating must be between 1 and 5." });
             }
 
-            // Update the user's rating for the event
-            userEvent.Rate = ratingDto.Rate;
+            // Update the rating
+            existingUserEvent.Rate = rateDto.Rate;
 
             // Save the changes
-            _unitOfWork.userEvents.Update(userEvent);
             _unitOfWork.Complete();
 
-            return Ok(new { message = "Rating successfully updated." });
+            return Ok(new { message = "Rating submitted successfully." });
         }
+
+        //public async Task<IActionResult> RateEvent(string eventId, [FromBody] RatingDto ratingDto)
+        //{
+        //    if (ratingDto == null || ratingDto.Rate == null)
+        //    {
+        //        return BadRequest(new { message = "Rating is required." });
+        //    }
+
+        //    // Fetch the event
+        //    var eventItem = await _unitOfWork.events.GetByIdAsync(eventId);
+        //    if (eventItem == null)
+        //    {
+        //        return NotFound(new { message = "Event not found." });
+        //    }
+
+        //    // Fetch the user event (check if the user has participated in the event)
+        //    var userEvent = await _unitOfWork.userEvents.FindAsync(ue => ue.EventId == eventId && ue.UserId == ratingDto.UserId);
+        //    if (userEvent == null)
+        //    {
+        //        return BadRequest(new { message = "User has not participated in the event." });
+        //    }
+
+        //    // Validate the rating value (e.g., check if it's within an acceptable range)
+        //    if (ratingDto.Rate < 1 || ratingDto.Rate > 5)
+        //    {
+        //        return BadRequest(new { message = "Rating must be between 1 and 5." });
+        //    }
+
+        //    // Update the user's rating for the event
+        //    userEvent.Rate = ratingDto.Rate;
+
+        //    // Save the changes
+        //    _unitOfWork.userEvents.Update(userEvent);
+        //    _unitOfWork.Complete();
+
+        //    return Ok(new { message = "Rating successfully updated." });
+        //}
+
+
+
 
     }
 }

@@ -56,5 +56,13 @@ namespace Repositories
         {
             return await FindAllAsync(e => e.UserId == userId);
         }
+
+        public Task<UserEvent> FindByUserIdAndEventIdAsync(string userId, string eventId)
+        {
+            return _context.UserEvents
+                .FirstOrDefaultAsync(ue => ue.UserId == userId && ue.EventId == eventId);
+        }
+
+
     }
 }

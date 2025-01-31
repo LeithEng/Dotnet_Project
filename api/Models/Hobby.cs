@@ -16,5 +16,8 @@ namespace api.Models
 
         //public ICollection<Hobby>? SubHobbies { get; set; }
         public ICollection<FavoriteHobby> FavoriteHobbies { get; set; }
+
+        public ICollection<Post> Posts { get; set; }  
+
     }
 }

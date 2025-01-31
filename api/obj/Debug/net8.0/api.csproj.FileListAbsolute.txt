@@ -910,3 +910,5 @@ C:\Users\mayar\source\repos\projectDotnet\api\obj\Debug\net8.0\refint\api.dll
 C:\Users\mayar\source\repos\projectDotnet\api\obj\Debug\net8.0\api.pdb
 C:\Users\mayar\source\repos\projectDotnet\api\obj\Debug\net8.0\api.genruntimeconfig.cache
 C:\Users\mayar\source\repos\projectDotnet\api\obj\Debug\net8.0\ref\api.dll
+C:\Users\mayar\source\repos\projectDotnet\api\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\mayar\source\repos\projectDotnet\api\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

@@ -24,6 +24,9 @@ builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.Requi
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(MappingProfile));  
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -34,6 +37,8 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader();
         });
 });
+
+
 
 builder.Services.AddAuthentication(options =>
 {

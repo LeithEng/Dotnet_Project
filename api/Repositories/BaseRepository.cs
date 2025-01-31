@@ -31,6 +31,10 @@ namespace Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
+        public IQueryable<T> GetQueryable()
+        {
+            return _context.Set<T>();
+        }
         public async Task<T> FindAsync(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
@@ -126,8 +130,6 @@ namespace Repositories
             entity.GetType().GetProperty("DeletedAt")?.SetValue(entity, DateTime.UtcNow);
             _context.Set<T>().Update(entity);
         }
-
-
 
         public async Task<int> CountAsync()
         {
