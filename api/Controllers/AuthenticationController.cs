@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 [Route("api/[controller]")]
 [ApiController]
 public class AuthenticationController : ControllerBase
@@ -94,16 +95,20 @@ public class AuthenticationController : ControllerBase
 
     }
 
-    private string GenerateJwtToken(User user, bool rememberMe)
+    private async Task<string> GenerateJwtToken(User user, bool rememberMe)
     {
-        var claims = new[]
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-
+        foreach (var role in userRoles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var tokenExpiration = rememberMe ? DateTime.Now.AddDays(10) : DateTime.Now.AddHours(1);
@@ -129,7 +134,6 @@ public class AuthenticationController : ControllerBase
             return Unauthorized(new { message = "User not found." });
         }
         var roles = await _userManager.GetRolesAsync(user);
-
         return Ok(new
         {
             email = user.Email,
