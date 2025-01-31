@@ -7,5 +7,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<ReactionDto, Reaction>().ReverseMap();
+        CreateMap<HobbyDto, Hobby>().ReverseMap();
     }
 }

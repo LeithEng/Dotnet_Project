@@ -8,9 +8,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using api.UnitOfWork;
+using Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<IHobbiesRepository, HobbiesRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -33,6 +36,8 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader();
         });
 });
+//autoomapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddAuthentication(options =>
 {
@@ -118,9 +123,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
-
+app.UseDeveloperExceptionPage();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
