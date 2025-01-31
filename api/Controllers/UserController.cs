@@ -215,7 +215,7 @@ public class UserController : ControllerBase
         }
         return BadRequest(result.Errors);
     }
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("AddAdmin")]
     public async Task<IActionResult> AddAdmin(RegisterDto registerDto)
     {
