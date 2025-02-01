@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";  // Import useNavigate from react-router-dom
 import MenuUser from "../../components/MenuUser/MenuUser";
 import "./ViewProfile.css";
 
@@ -13,33 +14,34 @@ const ViewProfile = () => {
     email: '',
   });
   const token = Cookies.get("token");
+  const navigate = useNavigate();  // Create navigate function
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       const token = Cookies.get("token").slice(1,-1);
 
-console.log("Retrieved token:", token); // Debugging step
+      console.log("Retrieved token:", token); // Debugging step
 
-if (!token) {
-  console.error("No authentication token found!");
-  return;
-}
+      if (!token) {
+        console.error("No authentication token found!");
+        return;
+      }
 
-try {
-  const response = await fetch("http://localhost:5073/api/User/GetProfile", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`, // Include token in request headers
-    },
-  });
+      try {
+        const response = await fetch("http://localhost:5073/api/User/GetProfile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token in request headers
+          },
+        });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch user profile. Status: ${response.status}`);
-  }
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user profile. Status: ${response.status}`);
+        }
 
-  const data = await response.json();
-  console.log("User data:", data); 
+        const data = await response.json();
+        console.log("User data:", data);
         setUser({
           name: `${data.firstName} ${data.lastName}`,
           photo: data.avatar || "/images/default-avatar.jpg",
@@ -68,7 +70,7 @@ try {
   };
 
   const handleSave = async () => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("token").slice(1,-1);
 
     if (!token) {
       console.error("No authentication token found!");
@@ -86,8 +88,8 @@ try {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          userName: user.firstName + user.lastName, // assuming username is first + last name
-          password: "YourPassword123!", // Replace this with actual password handling
+          userName: user.firstName + user.lastName,
+          password: "",
         }),
       });
 
@@ -100,6 +102,11 @@ try {
     } catch (error) {
       console.error("Error updating profile:", error);
     }
+  };
+
+  const redirectToEditPage = () => {
+    // Use navigate to redirect to the edit profile page
+    navigate("/EditProfile");
   };
 
   return (
@@ -171,7 +178,7 @@ try {
             {isEditing ? (
               <button onClick={handleSave}>Save Changes</button>
             ) : (
-              <button onClick={toggleEdit}>Edit Profile</button>
+              <button onClick={redirectToEditPage}>Edit Profile</button>
             )}
           </div>
         </div>
