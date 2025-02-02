@@ -1,29 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import pour la redirection
+import Cookies from "js-cookie";
 import MenuAdmin from "../../components/MenuAdmin/MenuAdmin";
 import Search from "../../components/Search/Search";
 import "./ManageHobbies.css";
 
+const API_BASE_URL = "http://localhost:5073/api/Hobby";
+
 const ManageHobbies = () => {
-  const [hobbies, setHobbies] = useState([
-    { id: 1, name: "New Hobby", subHobbies: [] },
-  ]);
+  const [hobbies, setHobbies] = useState([]);
   const [editing, setEditing] = useState(null);
+  const navigate = useNavigate(); // Hook pour la navigation
 
-  const handleAddSubHobby = (id) => {
-    const addSubHobby = (list) => {
-      list.forEach((hobby) => {
-        if (hobby.id === id) {
-          const newId = Date.now();
-          hobby.subHobbies.push({ id: newId, name: "New SubHobby", subHobbies: [] });
-        } else {
-          addSubHobby(hobby.subHobbies);
-        }
+  useEffect(() => {
+    fetchHobbies();
+  }, []);
+
+  const fetchHobbies = async () => {
+    const token = Cookies.get("token")?.slice(1, -1); // Vérifie si le token existe
+    try {
+      const response = await fetch(`${API_BASE_URL}/first-level`);
+      if (!response.ok) throw new Error("Failed to fetch hobbies");
+
+      const data = await response.json();
+      console.log("Fetched hobbies:", data);
+      setHobbies(data);
+    } catch (error) {
+      console.error("Error fetching hobbies:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
-    };
 
-    const newHobbies = [...hobbies];
-    addSubHobby(newHobbies);
-    setHobbies(newHobbies);
+      if (!response.ok) throw new Error("Failed to delete hobby");
+
+      setHobbies((prevHobbies) => prevHobbies.filter((hobby) => hobby.id !== id));
+    } catch (error) {
+      console.error("Error deleting hobby:", error);
+    }
   };
 
   const handleEdit = (id, newName) => {
@@ -36,30 +55,11 @@ const ManageHobbies = () => {
         }
       });
     };
-
-    const newHobbies = [...hobbies];
-    updateHobbyName(newHobbies);
-    setHobbies(newHobbies);
-    setEditing(null);
-  };
-
-  const handleDelete = (id) => {
-    const deleteHobby = (list) => {
-      return list.filter((hobby) => {
-        if (hobby.id === id) return false;
-        hobby.subHobbies = deleteHobby(hobby.subHobbies);
-        return true;
-      });
-    };
-
-    const newHobbies = deleteHobby(hobbies);
-    setHobbies(newHobbies);
   };
 
   const renderRows = (list, level = 0) => {
     return list.map((hobby) => (
       <React.Fragment key={hobby.id}>
-        {/* Ligne principale */}
         <tr>
           <td className="hobby-name" style={{ paddingLeft: `${level * 20}px` }}>
             {editing === hobby.id ? (
@@ -74,30 +74,14 @@ const ManageHobbies = () => {
             )}
           </td>
           <td className="hobby-actions">
-            {level < 2 && (
-              <button
-                className="add-btn"
-                onClick={() => handleAddSubHobby(hobby.id)}
-              >
-                <i className="fa-solid fa-plus"></i>
-              </button>
-            )}
-            <button
-              className="edit-btn"
-              onClick={() => setEditing(hobby.id)}
-            >
+            <button className="edit-btn" onClick={() => setEditing(hobby.id)}>
               <i className="fa-solid fa-pen"></i>
             </button>
-            <button
-              className="delete-btn"
-              onClick={() => handleDelete(hobby.id)}
-            >
+            <button className="delete-btn" onClick={() => handleDelete(hobby.id)}>
               <i className="fa-solid fa-trash"></i>
             </button>
           </td>
         </tr>
-        {/* Sous-lignes */}
-        {renderRows(hobby.subHobbies, level + 1)}
       </React.Fragment>
     ));
   };
@@ -105,20 +89,12 @@ const ManageHobbies = () => {
   return (
     <div className="manage-hobbies">
       <MenuAdmin />
-      <Search />
-
-      <button
-        className="add-hobby-btn"
-        onClick={() =>
-          setHobbies([
-            ...hobbies,
-            { id: Date.now(), name: "New Hobby", subHobbies: [] },
-          ])
-        }
-      >
-        Add a Hobby
-      </button>
-
+      <div className="top-bar">
+        <Search />
+        <button className="add-hobby-btn" onClick={() => navigate("/Hobby")}>
+          + Ajouter un hobby
+        </button>
+      </div>
       <table className="hobbies-table">
         <thead>
           <tr>
