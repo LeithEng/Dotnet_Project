@@ -9,7 +9,6 @@ const API_BASE_URL = "http://localhost:5073/api/Hobby";
 
 const ManageHobbies = () => {
   const [hobbies, setHobbies] = useState([]);
-  const [editing, setEditing] = useState(null);
   const navigate = useNavigate(); // Hook pour la navigation
 
   useEffect(() => {
@@ -45,36 +44,15 @@ const ManageHobbies = () => {
     }
   };
 
-  const handleEdit = (id, newName) => {
-    const updateHobbyName = (list) => {
-      list.forEach((hobby) => {
-        if (hobby.id === id) {
-          hobby.name = newName;
-        } else {
-          updateHobbyName(hobby.subHobbies);
-        }
-      });
-    };
-  };
-
   const renderRows = (list, level = 0) => {
     return list.map((hobby) => (
       <React.Fragment key={hobby.id}>
         <tr>
           <td className="hobby-name" style={{ paddingLeft: `${level * 20}px` }}>
-            {editing === hobby.id ? (
-              <input
-                type="text"
-                defaultValue={hobby.name}
-                onBlur={(e) => handleEdit(hobby.id, e.target.value)}
-                autoFocus
-              />
-            ) : (
-              hobby.name
-            )}
+            {hobby.name}
           </td>
           <td className="hobby-actions">
-            <button className="edit-btn" onClick={() => setEditing(hobby.id)}>
+            <button className="edit-btn" onClick={() => navigate(`/EditHobby/${hobby.id}`)}>
               <i className="fa-solid fa-pen"></i>
             </button>
             <button className="delete-btn" onClick={() => handleDelete(hobby.id)}>
@@ -82,8 +60,27 @@ const ManageHobbies = () => {
             </button>
           </td>
         </tr>
+        {/* Ajouter ici un appel pour récupérer les enfants d'un hobby */}
+        <ChildrenHobbies hobbyId={hobby.id} level={level + 1} />
       </React.Fragment>
     ));
+  };
+  
+  // Composant pour récupérer et afficher les enfants d'un hobby donné
+  const ChildrenHobbies = ({ hobbyId, level }) => {
+    const [children, setChildren] = useState([]);
+  
+    useEffect(() => {
+      const fetchChildren = async () => {
+        const response = await fetch(`${API_BASE_URL}/children/${hobbyId}`);
+        const data = await response.json();
+        setChildren(data);
+      };
+  
+      fetchChildren();
+    }, [hobbyId]);
+  
+    return renderRows(children, level);
   };
 
   return (
@@ -91,9 +88,7 @@ const ManageHobbies = () => {
       <MenuAdmin />
       <div className="top-bar">
         <Search />
-        <button className="add-hobby-btn" onClick={() => navigate("/Hobby")}>
-          + Ajouter un hobby
-        </button>
+        <button className="add-hobby-btn" onClick={() => navigate("/Hobby")}>+ Ajouter un hobby</button>
       </div>
       <table className="hobbies-table">
         <thead>
