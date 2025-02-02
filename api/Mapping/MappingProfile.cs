@@ -15,6 +15,7 @@ public class MappingProfile : Profile
 
         CreateMap<User, GetProfileDto>()
             .ForMember(dest => dest.roles, opt => opt.Ignore());
+        CreateMap<FavoriteHobbyDto,FavoriteHobby>().ReverseMap();
 
     }
 }

@@ -323,6 +323,91 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "api.Controllers.FavoriteHobbyController",
+    "Method": "CreateFavoriteHobby",
+    "RelativePath": "FavoriteHobby",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "favoriteHobbyDto",
+        "Type": "api.Models.FavoriteHobbyDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "api.Controllers.FavoriteHobbyController",
+    "Method": "GetFavoriteHobbies",
+    "RelativePath": "FavoriteHobby/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "api.Controllers.FavoriteHobbyController",
+    "Method": "GetHobbyById",
+    "RelativePath": "FavoriteHobby/hobby/{hobbyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hobbyId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "api.Controllers.FavoriteHobbyController",
+    "Method": "RemoveFavoriteHobby",
+    "RelativePath": "FavoriteHobby/remove/{userId}/{hobbyId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "hobbyId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "api.Controllers.FavoriteHobbyController",
+    "Method": "GetUsersByHobby",
+    "RelativePath": "FavoriteHobby/users/{hobbyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hobbyId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "api.Controllers.ReactionController",
     "Method": "GetReactionsForPost",
     "RelativePath": "posts/{postId}/reactions",

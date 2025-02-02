@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using api.Models;
 
 namespace Repositories
 {
@@ -124,7 +125,15 @@ namespace Repositories
         {
             entity.GetType().GetProperty("DeletedAt")?.SetValue(entity, DateTime.UtcNow);
             _context.Set<T>().Update(entity);
+
+            // If the entity is a Hobby, remove related FavoriteHobby entries
+            if (entity is Hobby hobby)
+            {
+                var favoriteHobbiesRepo = new FavoriteHobbiesRepository(_context);
+                favoriteHobbiesRepo.RemoveByHobbyIdAsync(hobby.Id).Wait();
+            }
         }
+
 
 
 

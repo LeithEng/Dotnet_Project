@@ -17,7 +17,8 @@ namespace Repositories
         public HobbiesRepository(ApplicationDbContext context) : base(context)
         {
         }
-              
+
+
         public Task<IEnumerable<Hobby>> GetFirstLevelAsync()
         {
            return FindAllAsync(b => b.Level == 1);
