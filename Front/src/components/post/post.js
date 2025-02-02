@@ -1,29 +1,43 @@
+import './Post.css'
 import React from "react";
-import { FaMapMarkerAlt, FaPaperclip, FaPlus, FaPen } from "react-icons/fa";
-import "./post.css";
 
-function Post() {
-  return (
-    <div className="post-container">
-      <div className="post-header">
-        <h3>Hobby</h3>
-      </div>
-      <div className="post-content">
-        <div className="textarea-container">
-          <textarea
-            id="text"
-            placeholder="Write something..."
-            className="post-input"
-          ></textarea>
-          <div className="icon-container">
-            <FaMapMarkerAlt className="icon" />
-            <FaPaperclip className="icon" />
-            <FaPen className="icon" />
+function Post()
+{
+
+
+    return (
+        <div className="post-card">
+          <div className="header">
+            <div className="profile-pic">Pic</div>
+            <div className="username">Username</div>
           </div>
+          <div className="content">
+            <p>This is the description of the post</p>
+            <p className="hobby">Hobby1</p>
+            <p className="date">Date</p>
+          </div>
+          <div className="reactions">
+            <div className="likes">
+              <button className="like-button">👍</button>
+              <span className="like-count">220</span>
+            </div>
+            <div className="emojis">
+              <button>👍</button>
+              <button>❤️</button>
+              <button>😂</button>
+              <button>😢</button>
+              <button>😡</button>
+            </div>
+          </div>
+          <button className="comment-button">Add a comment</button>
         </div>
-      </div>
-    </div>
-  );
+      );
+
+
 }
+
+
+
+
 
 export default Post;
