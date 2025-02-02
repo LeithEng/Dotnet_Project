@@ -1,0 +1,70 @@
+.hobby-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hobby-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .hobby-subtitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .hobby-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .hobby-card {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hobby-level {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .hobby-input,
+  .hobby-textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .hobby-textarea {
+    height: 60px;
+  }
+  
+  .hobby-parent {
+    font-size: 14px;
+    color: gray;
+  }
+  
+  .hobby-add-button,
+  .hobby-submit-button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .hobby-add-button:hover,
+  .hobby-submit-button:hover {
+    background-color: #0056b3;
+  }
