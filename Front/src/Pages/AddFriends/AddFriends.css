@@ -1,0 +1,43 @@
+.add-friends-page {
+    padding: 20px;
+}
+
+.search-container {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.search-container input {
+    padding: 8px;
+    margin-right: 10px;
+    width: 300px;
+}
+
+.search-container button {
+    padding: 8px 16px;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.user-item button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.user-item button:hover {
+    background-color: #45a049;
+}
