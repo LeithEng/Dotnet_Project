@@ -38,7 +38,7 @@ namespace api.Data
                     modelBuilder.Entity(entityType.ClrType).HasQueryFilter(predicate);
                 }
             }
-        
+
             base.OnModelCreating(modelBuilder);
 
             // Hobby Level Constraint
@@ -57,7 +57,8 @@ namespace api.Data
             modelBuilder.Entity<FavoriteHobby>()
             .HasOne(ue => ue.User)
             .WithMany(u => u.FavoriteHobbies)
-            .HasForeignKey(ue => ue.UserId);
+            .HasForeignKey(ue => ue.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<FavoriteHobby>()
@@ -70,26 +71,25 @@ namespace api.Data
                 .HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Reactions relation
             modelBuilder.Entity<Reaction>()
                 .HasOne(r => r.Post)
                 .WithMany(p => p.Reactions)
                 .HasForeignKey(r => r.PostId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascading deletes
-
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Reaction>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reactions)
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Avoid cascading deletes
+                .OnDelete(DeleteBehavior.Cascade);
 
             // UserEvent Relationship
             modelBuilder.Entity<UserEvent>()
@@ -98,7 +98,8 @@ namespace api.Data
             modelBuilder.Entity<UserEvent>()
                 .HasOne(ue => ue.User)
                 .WithMany(u => u.UserEvents)
-                .HasForeignKey(ue => ue.UserId);
+                .HasForeignKey(ue => ue.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserEvent>()
                 .HasOne(ue => ue.Event)
@@ -117,7 +118,7 @@ namespace api.Data
             modelBuilder.Entity<IdentityRole>().HasData(
             new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
             new IdentityRole { Name = "User", NormalizedName = "USER" }
-            );     
+            );
         }
 
 

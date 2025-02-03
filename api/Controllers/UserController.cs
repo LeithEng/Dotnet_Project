@@ -59,6 +59,7 @@ public class UserController : ControllerBase
         currentUser.FirstName = user.FirstName;
         currentUser.LastName = user.LastName;
         currentUser.Email = user.Email;
+        currentUser.Avatar = user.Avatar;
         currentUser.UpdatedAt = DateTime.Now;
         await _userManager.UpdateAsync(currentUser);
         return Ok("User updated successfully");
@@ -146,7 +147,7 @@ public class UserController : ControllerBase
             return BadRequest("You can't add yourself as a friend");
         }
         User friend = await _userManager.FindByNameAsync(username);
-        if (friend != null)
+        if (friend != null && !user.Friends.Contains(friend))
         {
             user.Friends.Add(friend);
             await _userManager.UpdateAsync(user);
@@ -154,7 +155,15 @@ public class UserController : ControllerBase
             await _userManager.UpdateAsync(friend);
             return Ok("Friend added successfully");
         }
-        return NotFound("friend not found !!");
+        if (friend == null)
+        {
+            return NotFound("friend not found !!");
+        }
+        if (user.Friends.Contains(friend))
+        {
+            return BadRequest("You are already friend with this user");
+        }
+        return BadRequest("Something went wrong");
     }
     [Authorize]
     [HttpPost("removeFriend")]
