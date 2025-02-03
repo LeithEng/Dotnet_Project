@@ -15,6 +15,14 @@ import EditProfile from './Pages/EditProfile/EditProfile';
 import ViewEventCard from './Pages/ViewEvent/ViewEvent';
 import ManageAdminPage from './Pages/ManageAdminPage/ManageAdminPage';
 import ViewProfile from './Pages/ViewProfile/ViewProfile';
+import ViewFriends from './Pages/ViewFriends/ViewFriends';
+import ManageUsers from './Pages/ManageUsers/ManageUsers';
+import ManageHobbies from './Pages/ManageHobbies/ManageHobbies';
+import HobbyPage from './Pages/CreateHobby/CreateHobby';
+import EditHobby from './Pages/EditHobby/EditHobby';
+import ViewHobbies from './Pages/ViewHobbies/ViewHobbies';
+import ManageAdmins from './Pages/ManageAdmins/ManageAdmins';
+import AddFriends from './Pages/AddFriends/AddFriends';
 function App() {
   return (
     <Router>
@@ -32,6 +40,15 @@ function App() {
         <Route path="/ViewEvent" element={<ViewEventCard/>} />
         <Route path="/ManageAdmin" element={<ManageAdminPage/>} />
         <Route path="/Profile" element={<ViewProfile/>} />
+        <Route path="/ViewFriends" element={<ViewFriends/>} />
+        <Route path="/ManageUsers" element={<ManageUsers/>} />
+        <Route path="/ManageHobbies" element={<ManageHobbies/>} />
+        <Route path="/Hobby" element={<HobbyPage/>} />
+        <Route path="/EditHobby/:id" element={<EditHobby/>} />
+        <Route path="/ViewHobbies" element={<ViewHobbies/>} />
+        <Route path="/ManageAdmins" element={<ManageAdmins/>} />
+        <Route path="/AddFriends" element={<AddFriends/>} />
+
       </Routes>
     </Router>
   );
