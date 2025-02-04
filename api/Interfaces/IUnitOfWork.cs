@@ -15,6 +15,7 @@ namespace api.Interfaces
 
         IBaseRepository<Post> posts { get; }
         IBaseRepository<Comment> comments { get; }
+
         IBaseRepository<Reaction> reactions { get; }
         IBaseRepository<Event> events { get;}
         IUserEventsRepository userEvents { get; }

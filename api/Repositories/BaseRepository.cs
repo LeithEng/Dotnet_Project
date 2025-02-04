@@ -20,7 +20,6 @@ namespace Repositories
             _context = context;
         }
 
-
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
@@ -92,7 +91,17 @@ namespace Repositories
             return entity;
         }
 
-   
+
+        public IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+            return query;
+        }
+
 
         public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
         {

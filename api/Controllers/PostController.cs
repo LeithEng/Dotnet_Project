@@ -17,14 +17,13 @@ using System.Security.Claims;
 
 namespace api.Controllers
 {
-    //[Authorize]  // Restrict access to authenticated users
+    [Authorize]  
     [Route("api/[controller]")]
     [ApiController]
     public class PostController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
 
         public PostController(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -33,10 +32,11 @@ namespace api.Controllers
 
         }
 
-        // POST: api/Post
+       
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] PostDto postDto)
         {
+            // Ensure the model state is valid
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -51,39 +51,36 @@ namespace api.Controllers
                 });
             }
 
-            var user = await _unitOfWork.UserManager.FindByIdAsync(postDto.UserId);
+            // Get the authenticated user's ID from the JWT token
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            // Retrieve the user from the database based on the currentUserId
+            var user = await _unitOfWork.UserManager.FindByIdAsync(currentUserId);
             if (user == null)
             {
                 return BadRequest(new { message = "User does not exist." });
             }
 
+            // Retrieve the hobby from the database
             var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == postDto.HobbyId);
             if (hobby == null)
             {
                 return BadRequest(new { message = "Invalid Hobby ID provided." });
             }
 
-            // Create the new post
-            //var newPost = new Post
-            //{
-            //    Id = Guid.NewGuid().ToString(),
-            //    Content = postDto.Content,
-            //    ImageUrl = postDto.ImageUrl,
-            //    UserId = postDto.UserId,
-            //    User = user,
-            //    HobbyId = postDto.HobbyId,
-            //    Hobby = hobby,
-            //    CreatedAt = DateTime.UtcNow,
-            //    UpdatedAt = DateTime.UtcNow
-            //};
-
+            // Map the PostDto to a Post object
             var newPost = _mapper.Map<Post>(postDto);
+
+            // Set additional properties
             newPost.Id = Guid.NewGuid().ToString();
             newPost.User = user;
             newPost.Hobby = hobby;
             newPost.CreatedAt = DateTime.UtcNow;
-            newPost.UpdatedAt = DateTime.UtcNow;
-
 
             // Add the post to the repository
             await _unitOfWork.posts.AddAsync(newPost);
@@ -92,11 +89,14 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetPostById), new { id = newPost.Id }, newPost);
         }
 
-        // GET: api/Post/{id}
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPostById(string id)
         {
-            var post = await _unitOfWork.posts.GetByIdAsync(id);
+            var post = await _unitOfWork.posts
+                .Include(p => p.Comments)  // Eagerly load Comments
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (post == null)
             {
                 return NotFound(new { message = "Post not found." });
@@ -105,43 +105,47 @@ namespace api.Controllers
             return Ok(post);
         }
 
-        // GET: api/Post/random
+
         [HttpGet("random")]
         public async Task<IActionResult> GetRandomPosts([FromQuery] int count = 5)
         {
-            var posts = await _unitOfWork.posts.GetAllAsync();
-            var randomPosts = posts.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
 
-            if (!randomPosts.Any())
+
+            var posts = await _unitOfWork.posts
+                .Include(p => p.Comments)  // Eagerly load Comments
+                .Take(count)
+                .ToListAsync();
+
+            if (!posts.Any())
             {
                 return NotFound(new { message = "No posts found." });
             }
 
-            return Ok(randomPosts);
+            return Ok(posts);
         }
 
-
         [HttpPut("{id}")]
+
         public async Task<IActionResult> UpdatePost(string id, [FromBody] PostDto postDto)
         {
-            // Retrieve the current user ID from the JWT token
+            // Get the authenticated user's ID from the JWT token
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Fetch the post from the database
+            // Retrieve the post by its ID
             var postToUpdate = await _unitOfWork.posts.GetByIdAsync(id);
             if (postToUpdate == null)
             {
                 return NotFound(new { message = "Post not found." });
             }
 
-            // Check if the current user is the creator of the post
+            // Ensure the authenticated user is the owner of the post
             if (postToUpdate.UserId != currentUserId)
             {
                 return Unauthorized(new { message = "You are not authorized to update this post." });
             }
 
-            // Check if the hobby ID provided is valid
-            if (!string.IsNullOrEmpty(postDto.HobbyId))
+            // Validate HobbyId (ignore default placeholder values)
+            if (!string.IsNullOrEmpty(postDto.HobbyId) && postDto.HobbyId != "string")
             {
                 var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == postDto.HobbyId);
                 if (hobby == null)
@@ -152,47 +156,28 @@ namespace api.Controllers
                 postToUpdate.Hobby = hobby;
             }
 
-            // Map the updated postDto properties to the postToUpdate entity
-            _mapper.Map(postDto, postToUpdate);
-            postToUpdate.UpdatedAt = DateTime.UtcNow;
+            // Only update fields if provided (ignore empty or default values)
+            if (!string.IsNullOrEmpty(postDto.Content) && postDto.Content != "string")
+            {
+                postToUpdate.Content = postDto.Content;
+            }
 
-            // Update the post in the database
+            if (!string.IsNullOrEmpty(postDto.ImageUrl) && postDto.ImageUrl != "string")
+            {
+                postToUpdate.ImageUrl = postDto.ImageUrl;
+            }
+
+            // Keep fixed values
+            postToUpdate.Id = id;
+            postToUpdate.UserId = currentUserId; 
+
+            // Update the post in the repository
             _unitOfWork.posts.Update(postToUpdate);
             _unitOfWork.Complete();
 
             return Ok(new { message = "Post updated successfully." });
         }
 
-        //// PUT: api/Post/{id}
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> UpdatePost(string id, [FromBody] PostDto postDto)
-        //{
-        //    var postToUpdate = await _unitOfWork.posts.GetByIdAsync(id);
-        //    if (postToUpdate == null)
-        //    {
-        //        return NotFound(new { message = "Post not found." });
-        //    }
-
-        //    if (!string.IsNullOrEmpty(postDto.HobbyId))
-        //    {
-        //        var hobby = await _unitOfWork.hobbies.FindAsync(h => h.Id == postDto.HobbyId);
-        //        if (hobby == null)
-        //        {
-        //            return BadRequest(new { message = "Invalid Hobby ID provided." });
-        //        }
-        //        postToUpdate.HobbyId = postDto.HobbyId;
-        //        postToUpdate.Hobby = hobby;
-        //    }
-
-        //    _mapper.Map(postDto, postToUpdate);
-        //    postToUpdate.UpdatedAt = DateTime.UtcNow;
-
-
-        //    _unitOfWork.posts.Update(postToUpdate);
-        //    _unitOfWork.Complete();
-
-        //    return Ok(new { message = "Post updated successfully." });
-        //}
 
         // DELETE: api/Post/{id}
         [HttpDelete("{id}")]
@@ -220,22 +205,6 @@ namespace api.Controllers
 
             return Ok(new { message = "Post deleted successfully." });
         }
-
-
-
-        //public async Task<IActionResult> DeletePost(string id)
-        //{
-        //    var postToDelete = await _unitOfWork.posts.GetByIdAsync(id);
-        //    if (postToDelete == null)
-        //    {
-        //        return NotFound(new { message = "Post not found." });
-        //    }
-
-        //    _unitOfWork.posts.SoftDelete(postToDelete);
-        //    _unitOfWork.Complete();
-
-        //    return Ok(new { message = "Post deleted successfully." });
-        //}
 
         // Search posts by Hobby ID
         [HttpGet("searchByHobby")]

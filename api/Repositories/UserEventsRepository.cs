@@ -63,6 +63,7 @@ namespace Repositories
                 .FirstOrDefaultAsync(ue => ue.UserId == userId && ue.EventId == eventId);
         }
 
+      
 
     }
 }

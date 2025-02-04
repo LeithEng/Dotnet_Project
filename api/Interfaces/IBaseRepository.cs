@@ -26,6 +26,7 @@ namespace api.Interfaces
         Task<int> CountAsync();
 
         IQueryable<T> GetQueryable();
+        IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties);
 
         Task<int> CountAsync(Expression<Func<T, bool>> criteria);
     }

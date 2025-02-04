@@ -14,6 +14,7 @@ using System.Security.Claims;
 
 namespace api.Controllers
 {
+    [Authorize]  
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -27,10 +28,11 @@ namespace api.Controllers
             _mapper = mapper;
         }
 
-        // POST: api/Comment
+     
         [HttpPost]
         public async Task<IActionResult> CreateComment([FromBody] CommentDto commentDto)
         {
+            // Validate the model
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -45,8 +47,11 @@ namespace api.Controllers
                 });
             }
 
-            // Check if the user exists
-            var user = await _unitOfWork.UserManager.FindByIdAsync(commentDto.UserId);
+            // Get the user ID from the current authenticated user (no need to pass it in the body)
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Check if the user exists (this is optional, as the user is already validated by the JWT token)
+            var user = await _unitOfWork.UserManager.FindByIdAsync(currentUserId);
             if (user == null)
             {
                 return BadRequest(new { message = "User does not exist." });
@@ -59,13 +64,12 @@ namespace api.Controllers
                 return BadRequest(new { message = "Post does not exist." });
             }
 
-            // Create the new comment
+            // Create the new comment and associate it with the authenticated user
             var newComment = _mapper.Map<Comment>(commentDto);
             newComment.Id = Guid.NewGuid().ToString();
-            newComment.User = user;
+            newComment.UserId = currentUserId;  // Set the UserId from the authenticated user
+            newComment.User = user;  
             newComment.Post = post;
-            newComment.CreatedAt = DateTime.UtcNow;
-            newComment.UpdatedAt = DateTime.UtcNow;
 
             // Add the comment to the repository
             await _unitOfWork.comments.AddAsync(newComment);
@@ -74,20 +78,8 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetCommentById), new { id = newComment.Id }, newComment);
         }
 
-        // GET: api/Comment/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCommentById(string id)
-        {
-            var comment = await _unitOfWork.comments.GetByIdAsync(id);
-            if (comment == null)
-            {
-                return NotFound(new { message = "Comment not found." });
-            }
 
-            return Ok(comment);
-        }
 
-        // GET: api/Comment/post/{postId}
         [HttpGet("post/{postId}")]
         public async Task<IActionResult> GetCommentsByPostId(string postId)
         {
@@ -98,22 +90,70 @@ namespace api.Controllers
                 return NotFound(new { message = "No comments found for the specified post." });
             }
 
-            return Ok(comments);
+            // Format the response to include UserId
+            var response = comments.Select(comment => new
+            {
+                comment.Id,
+                comment.Content,
+                comment.CreatedAt,
+                comment.UpdatedAt,
+                UserId = comment.UserId, 
+                PostId = comment.PostId
+            });
+
+            return Ok(response);
         }
 
-        // PUT: api/Comment/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateComment(string id, [FromBody] CommentDto commentDto)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCommentById(string id)
         {
+            var comment = await _unitOfWork.comments.GetByIdAsync(id);
+            if (comment == null)
+            {
+                return NotFound(new { message = "Comment not found." });
+            }
+
+            // Return the comment with the UserId included in the response
+            var response = new
+            {
+                comment.Id,
+                comment.Content,
+                comment.CreatedAt,
+                comment.UpdatedAt,
+                UserId = comment.UserId, 
+                PostId = comment.PostId
+            };
+
+            return Ok(response);
+        }
+
+       
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateComment(string id, [FromBody] UpdateCommentDto commentDto)
+        {
+            // Retrieve the comment to be updated
             var commentToUpdate = await _unitOfWork.comments.GetByIdAsync(id);
             if (commentToUpdate == null)
             {
                 return NotFound(new { message = "Comment not found." });
             }
 
-            // Map the updated fields to the comment
-            _mapper.Map(commentDto, commentToUpdate);
-            commentToUpdate.UpdatedAt = DateTime.UtcNow;
+            // Ensure the current user is authorized to update the comment
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (commentToUpdate.UserId != currentUserId)
+            {
+                return Unauthorized(new { message = "You are not authorized to update this comment." });
+            }
+
+            // Only update fields if provided (ignore empty or default values)
+            if (!string.IsNullOrEmpty(commentDto.Content) && commentDto.Content != "string")
+            {
+                commentToUpdate.Content = commentDto.Content;
+            }
+
+            // Keep the `PostId` as is from the existing comment (no need to pass in request)
+            commentToUpdate.PostId = commentToUpdate.PostId;  // This will keep the PostId the same
+            commentToUpdate.UserId = currentUserId;  // Keep the current user as the owner of the comment
 
             // Update the comment in the repository
             _unitOfWork.comments.Update(commentToUpdate);
@@ -122,7 +162,7 @@ namespace api.Controllers
             return Ok(new { message = "Comment updated successfully." });
         }
 
-        // DELETE: api/Comment/{id}
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(string id)
         {
@@ -134,7 +174,7 @@ namespace api.Controllers
             }
 
             // Check if the logged-in user is the creator of the post or the comment
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assuming you're using JWT and the user ID is stored in the claims
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             if (commentToDelete.UserId != currentUserId)
             {

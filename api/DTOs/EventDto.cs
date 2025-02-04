@@ -7,8 +7,11 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string HobbyId { get; set; }
-        public List<string> UserIds { get; set; }
-        public string CreatedByUserId { get; set; } 
+        // public string CreatedByUserId { get; set; }
+        //public List<UserEventDto> UserEvents { get; set; } 
+
+
+
 
     }
 }

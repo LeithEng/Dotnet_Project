@@ -7,46 +7,76 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using api.DTOs;
+using AutoMapper;
+
 
 namespace Repositories
 {
     public class EventRepository : BaseRepository<Event>, IEventRepository
     {
-        protected ApplicationDbContext _context;
+        private readonly IMapper _mapper;  // Add this line
 
-        public EventRepository(ApplicationDbContext context) : base(context)
+        // Inject IMapper into the constructor
+        public EventRepository(ApplicationDbContext context, IMapper mapper) : base(context)
         {
-        }
-        // Method to get an Event by its Id
-        public async Task<Event> GetByIdAsync(string eventId)
-        {
-            return await FindAsync(e => e.Id == eventId);
+            _context = context;
+            _mapper = mapper;  // Set the injected mapper
         }
 
-        // Method to get all events, optionally including related UserEvents and Users
-        public async Task<IEnumerable<Event>> GetAllEventsAsync(bool includesUserEvents = false)
+
+
+
+        public async Task<EventDto> GetByIdAsync(string eventId)
         {
-            if (includesUserEvents)
+            var eventEntity = await _context.Events
+                                            .FirstOrDefaultAsync(e => e.Id == eventId);
+
+            if (eventEntity == null)
             {
-                // If includesUserEvents is true, also include UserEvents and the related User data
-                return await FindAllAsync(
-                    e => true,  // Get all events
-                    new string[] { "UserEvents", "UserEvents.User" } // Include related entities
-                );
+                return null; // Handle case when event is not found
             }
 
-            // If no includes, just return events
-            return await FindAllAsync(e => true);
+            // Map to EventDto
+            var eventDto = _mapper.Map<EventDto>(eventEntity);
+
+            return eventDto;
         }
 
-        // Method to get a list of events by a userId (if UserEvents relationship is needed)
-        public async Task<IEnumerable<Event>> GetEventsByUserIdAsync(string userId)
-        {
-            return await _context.UserEvents
-                .Where(ue => ue.UserId == userId)
-                .Select(ue => ue.Event)
-                .ToListAsync();
-        }
+
+        //public async Task<EventDto> GetByIdAsync(string eventId)
+        //{
+        //    var eventEntity = await _context.Events
+        //                                     .Include(e => e.UserEvents)  // Include UserEvents
+        //                                         .ThenInclude(ue => ue.User)  // Include the related User (if necessary)
+        //                                     .FirstOrDefaultAsync(e => e.Id == eventId);
+
+        //    if (eventEntity == null)
+        //    {
+        //        return null; // Handle case when event is not found
+        //    }
+
+        //    // Map to EventDto
+        //    var eventDto = _mapper.Map<EventDto>(eventEntity);
+
+        //    return eventDto;
+        //}
+
+
+
+        //public async Task<IEnumerable<Event>> GetAllEventsAsync(bool includesUserEvents = false)
+        //{
+        //    IQueryable<Event> query = _context.Events;
+
+        //    if (includesUserEvents)
+        //    {
+        //        query = query.Include(e => e.UserEvents)  // Include the UserEvent relation
+        //                     .ThenInclude(ue => ue.User);  // Include User details within the UserEvent relation
+        //    }
+
+        //    return await query.ToListAsync();
+        //}
+
     }
 }
 

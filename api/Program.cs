@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using api.UnitOfWork;
 using System.Text.Json.Serialization;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,10 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
+
+
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "api", Version = "v1" });
