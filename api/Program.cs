@@ -11,11 +11,15 @@ using api.UnitOfWork;
 using Repositories;
 using api.DTOs;
 using api.Mapping;
-
+using System.Text.Json.Serialization;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IHobbiesRepository, HobbiesRepository>();
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -24,6 +28,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<AuthenticationController>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddIdentity<User, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = false; options.User.RequireUniqueEmail = true; })
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -39,8 +44,8 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader();
         });
 });
-//autoomapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -85,6 +90,10 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
+
+
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "api", Version = "v1" });
@@ -117,6 +126,14 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
+
 
 var app = builder.Build();
 

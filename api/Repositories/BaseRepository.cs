@@ -31,6 +31,10 @@ namespace Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
+        public IQueryable<T> GetQueryable()
+        {
+            return _context.Set<T>();
+        }
         public async Task<T> FindAsync(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
@@ -42,7 +46,7 @@ namespace Repositories
             return await query.FirstOrDefaultAsync(criteria);
         }
 
-        
+     
         public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
@@ -88,7 +92,17 @@ namespace Repositories
             return entity;
         }
 
-   
+
+        public IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+            return query;
+        }
+
 
         public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
         {

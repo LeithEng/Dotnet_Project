@@ -8,5 +8,6 @@ namespace api.Interfaces
     public interface IUserEventsRepository : IBaseRepository<UserEvent>
     {
         Task<IEnumerable<UserEvent>> getUsers(string eventId, bool includes = false);
+        
     }
 }

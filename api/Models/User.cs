@@ -18,13 +18,15 @@ namespace api.Models
         public DateTime? DeletedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-
         public ICollection<Post> Posts { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Reaction> Reactions { get; set; }
         public ICollection<UserEvent> UserEvents { get; set; }
         public ICollection<FavoriteHobby> FavoriteHobbies { get; set; }
-        public ICollection<User> Friends { get; set; } = new List<User>();
+        public ICollection<User> Friends { get; set; }
+
+        public ICollection<Event> CreatedEvents { get; set; } 
+
     }
 
 
