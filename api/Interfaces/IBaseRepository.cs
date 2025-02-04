@@ -25,6 +25,10 @@ namespace api.Interfaces
         void DeleteRange(IEnumerable<T> entities);
         void SoftDelete(T entity);
         Task<int> CountAsync();
+
+        IQueryable<T> GetQueryable();
+        IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties);
+
         Task<int> CountAsync(Expression<Func<T, bool>> criteria);
     }
 }

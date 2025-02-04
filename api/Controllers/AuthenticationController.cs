@@ -95,10 +95,11 @@ public class AuthenticationController : ControllerBase
 
     }
 
-    private async Task<string> GenerateJwtToken(User user, bool rememberMe)
+ 
+
+    private string GenerateJwtToken(User user, bool rememberMe)
     {
-        var userRoles = await _userManager.GetRolesAsync(user);
-        var claims = new List<Claim>
+        var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
@@ -134,6 +135,7 @@ public class AuthenticationController : ControllerBase
             return Unauthorized(new { message = "User not found." });
         }
         var roles = await _userManager.GetRolesAsync(user);
+
         return Ok(new
         {
             email = user.Email,
